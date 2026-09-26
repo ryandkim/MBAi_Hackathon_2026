@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>mixer. for organizers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,800&display=swap" rel="stylesheet">
+<style>:root{--bg:#FAF8F5;--card:#FFFFFF;--txt:#111;--mut:#6B6B6B;--line:#E7E3DD;--acc:#E5483B;--grn:#1F9D55;--amb:#B7791F;--bub:#EFEDEA}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#EDEAE5;color:var(--txt);font-family:-apple-system,"SF Pro Text",Inter,"Helvetica Neue",Arial,sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:24px;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer;border:0;color:inherit;background:none}
+input{font-family:inherit}
+.phone{width:390px;height:844px;border-radius:48px;background:var(--bg);position:relative;overflow:hidden;box-shadow:0 0 0 9px #1c1c1e,0 0 0 10px #3a3a3c,0 20px 50px rgba(0,0,0,.18)}
+.status{position:absolute;top:0;left:0;right:0;height:46px;display:flex;justify-content:space-between;align-items:center;padding:6px 30px 0;font-size:15px;font-weight:600;z-index:50}
+.notch{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:118px;height:32px;background:#000;border-radius:20px;z-index:51}
+.tag{font-size:10.5px;color:#9A9690;font-weight:400}
+em{font-style:normal}
+/* main */
+.main{position:absolute;inset:0;padding:50px 0 12px;display:flex;flex-direction:column}
+.mhead{display:flex;align-items:center;gap:10px;padding:4px 16px 10px;border-bottom:1px solid var(--line)}
+.av{width:34px;height:34px;border-radius:50%;background:#111;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:15px;flex:none;letter-spacing:-.3px}
+.av i{color:var(--acc);font-style:normal}
+.mhead .nm{flex:1;line-height:1.25;min-width:0}.mhead .nm b{font-size:15px;font-weight:600;display:block}.mhead .nm small{font-size:12px;color:var(--mut)}
+.rst{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--mut);flex:none}
+.rst svg{width:17px;height:17px}
+/* plan card */
+.plan{background:var(--card);border:1px solid var(--line);border-radius:14px}
+.plan.pin{margin:10px 12px 0;padding:10px 13px 8px;box-shadow:0 1px 2px rgba(0,0,0,.06);position:relative;z-index:2}
+.plan .ph{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;font-weight:600;margin-bottom:4px}
+.plan .ph span{font-size:11.5px;font-weight:400;color:var(--mut)}
+.prow{display:flex;align-items:baseline;gap:8px;padding:3px 0;font-size:12.5px;border-top:1px solid #F1EEE9}
+.prow:first-of-type{border-top:0}
+.prow .k{color:var(--mut);width:92px;flex:none}
+.prow .v{flex:1;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prow .st{flex:none;font-size:11.5px;color:#9A9690;text-align:right}
+.prow.blank .v{color:#B5B0A8;font-weight:400}
+.prow.ok .st{color:var(--grn)}
+.prow.pend .st{color:var(--amb);font-weight:500}
+.prow.set .st{color:var(--mut)}
+.prow.flash .v{animation:hl 1.2s}
+@keyframes hl{0%{background:#FCEBE9}100%{background:transparent}}
+.plan.big{padding:12px 16px}.plan.big .prow{font-size:14.5px;padding:9px 0}.plan.big .prow .k{width:108px}.plan.big .prow .st{font-size:12.5px}
+.plan.big .ph{font-size:14px;margin-bottom:2px}
+/* thread */
+.thread{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:6px;padding:12px 12px 8px;scrollbar-width:none}
+.thread::-webkit-scrollbar{display:none}
+.msg{max-width:80%;padding:8px 12px;border-radius:18px;font-size:14px;line-height:1.35;animation:pop .25s ease-out}
+.msg.me{background:var(--acc);color:#fff;align-self:flex-end;border-bottom-right-radius:5px}
+.msg.agent,.msg.ha{background:var(--bub);align-self:flex-start;border-bottom-left-radius:5px}
+.msg.ya{background:var(--card);border:1px solid var(--line);align-self:flex-end;border-bottom-right-radius:5px}
+.msg.ya,.msg.ha{font-size:13px;max-width:82%}
+.msg .who{display:block;font-size:11px;color:var(--mut);margin-bottom:1px}
+.msg.agent .who{display:none}
+.msg .t{display:block;font-size:10px;opacity:.7;margin-top:2px}
+.msg.sys{align-self:center;background:none;color:var(--mut);font-size:11.5px;padding:4px 0;max-width:90%;text-align:center}
+.typing{align-self:flex-start;background:var(--bub);border-radius:18px;padding:11px 14px;display:flex;gap:4px}
+.typing i{width:6px;height:6px;border-radius:50%;background:#A8A39B;animation:blink 1s infinite}.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes blink{50%{opacity:.3}}
+@keyframes pop{from{transform:translateY(4px);opacity:0}}
+.qcard{align-self:flex-start;max-width:86%;background:var(--bub);border-radius:18px;border-bottom-left-radius:5px;padding:9px 12px;font-size:14px;animation:pop .25s}
+.qcard .opts{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.qcard .opts button{font-size:13px;padding:6px 12px;border-radius:10px;background:var(--card);border:1px solid var(--line)}
+.qcard .opts button.on{background:var(--acc);border-color:var(--acc);color:#fff}
+.qcard .opts button.off{color:#B5B0A8}
+.acts{align-self:stretch;padding:4px 4px 2px;animation:pop .25s}
+.acts .ah{display:flex;justify-content:space-between;font-size:11.5px;color:var(--mut);margin-bottom:2px}
+.act{display:flex;gap:9px;align-items:center;font-size:13px;padding:4px 0;line-height:1.3;color:#333;animation:pop .25s}
+.act .ic{width:15px;height:15px;flex:none;display:flex;align-items:center;justify-content:center;color:#9A9690}
+.act .ic svg{width:15px;height:15px}
+.act.run .ic{border:1.5px solid var(--line);border-top-color:#6B6B6B;border-radius:50%;width:13px;height:13px;animation:spin .8s linear infinite}
+.act.hot{color:var(--txt);font-weight:600}
+.act .tm{margin-left:auto;font-size:11px;color:#A8A39B;flex:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+.btncard{align-self:flex-start;max-width:82%;background:var(--bub);border-radius:18px;border-bottom-left-radius:5px;padding:9px 12px;font-size:14px;line-height:1.35;animation:pop .25s}
+.btncard .who{display:none}
+.btncard button{margin-top:9px;width:100%;padding:10px;border-radius:12px;font-weight:600;font-size:14px;background:var(--acc);color:#fff}
+.btncard button.used{background:var(--card);color:var(--mut);border:1px solid var(--line)}
+.sum{align-self:flex-end;font-size:11.5px;color:var(--mut);padding:0 4px 4px;display:flex;align-items:center;gap:5px;animation:pop .25s}
+.sum svg{width:12px;height:12px;color:var(--grn)}
+/* booked */
+.bk{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(0,0,0,.06)}
+.bk.mini{padding:13px 14px;align-self:stretch;animation:pop .3s}
+.bk .kicker{font-size:11.5px;color:var(--grn);font-weight:600}
+.bk h2{font-size:18px;font-weight:600;margin-top:1px}
+.bk .when{font-size:13px;color:var(--mut);margin-top:1px}
+.bk .kv{display:flex;justify-content:space-between;gap:10px;font-size:13px;padding:7px 0;border-top:1px solid #F1EEE9}
+.bk .kv:first-of-type{margin-top:10px}
+.bk .kv span:first-child{color:var(--mut);flex:none}.bk .kv span:last-child{text-align:right}
+.auto{align-self:stretch;padding:8px 4px 4px;animation:pop .3s}
+.auto .ah{font-size:13px;font-weight:600;margin-bottom:4px}
+.task{display:flex;gap:10px;align-items:baseline;padding:7px 0;border-top:1px solid var(--line);font-size:13px;line-height:1.35}
+.task .tt{flex:1}
+.task .ts{flex:none;font-size:11.5px;color:var(--mut)}
+.task .ts.live{color:var(--grn)}
+/* input */
+.inbar{display:flex;gap:8px;align-items:center;padding:8px 12px 0}
+.inbar input{flex:1;min-width:0;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:10px 15px;color:var(--txt);font-size:14px;outline:none}
+.inbar input:focus{border-color:#C9C3BA}
+.inbar button{width:34px;height:34px;border-radius:50%;background:var(--acc);color:#fff;flex:none;display:flex;align-items:center;justify-content:center}
+.inbar button svg{width:16px;height:16px}
+/* sheets */
+.sheet{position:absolute;inset:0;z-index:30;background:var(--bg);padding:48px 18px 12px;display:flex;flex-direction:column;transform:translateY(103%);transition:transform .45s cubic-bezier(.2,.8,.2,1)}
+.sheet.open{transform:none}
+.grab{width:36px;height:5px;border-radius:9px;background:#D6D1C9;margin:0 auto 10px;flex:none}
+.shh{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:4px}
+.shh .need{font-size:12px;color:var(--mut);display:flex;gap:8px;align-items:baseline}
+.shh h1{font-size:24px;font-weight:600;letter-spacing:-.3px;margin-top:2px}
+.shh .x{width:30px;height:30px;border-radius:50%;background:var(--bub);flex:none;display:flex;align-items:center;justify-content:center;color:#555}
+.shh .x svg{width:13px;height:13px}
+.shsub{font-size:13px;color:var(--mut)}
+.sheetbar{padding:10px 0 0!important}
+.toast{position:absolute;left:18px;right:18px;bottom:72px;z-index:60;background:#111;color:#fff;border-radius:12px;padding:10px 13px;font-size:13px;line-height:1.35;opacity:0;transform:translateY(8px);transition:.25s;pointer-events:none}
+.toast.show{opacity:1;transform:none}
+/* calendar */
+.calcap{font-size:12px;color:var(--mut);margin:8px 0 6px}
+.calcap b{color:var(--txt);font-weight:500}
+.cal{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 -18px;padding:0 18px 2px;flex:none}.cal::-webkit-scrollbar{display:none}
+.day{flex:none;width:48px;border-radius:12px;background:var(--card);border:1px solid var(--line);padding:6px 0 6px;text-align:center;line-height:1.15;position:relative}
+.day .wd{font-size:10.5px;color:var(--mut)}
+.day .dn{font-size:17px;font-weight:600;margin:1px 0}
+.day .dd{display:none}
+.day .oc{font-size:10px;color:var(--mut)}
+.day .best{position:absolute;top:4px;right:5px;width:5px;height:5px;border-radius:50%;background:var(--acc);font-size:0}
+.day.on{background:#111;border-color:#111;color:#fff}.day.on .wd,.day.on .oc{color:#ccc}.day.on .best{background:#fff}
+.day.busy{background:transparent;color:#B5B0A8;cursor:default}.day.busy .dn{text-decoration:line-through}.day.busy .wd,.day.busy .oc{color:#C5C0B8}
+.day.none .oc{color:#B5B0A8}
+/* swipe */
+.stack{position:relative;flex:1;margin:12px 0 4px}
+.vcard{position:absolute;inset:0;border-radius:16px;background:var(--card);border:1px solid var(--line);overflow:hidden;touch-action:none;user-select:none;transition:transform .35s ease,opacity .35s;box-shadow:0 1px 2px rgba(0,0,0,.06)}
+.vcard.drag{transition:none}
+.vcard .img{height:46%;background:#D9D2C7 center/cover no-repeat;position:relative}
+.vcard .body{padding:13px 15px}
+.vcard .top1{display:flex;justify-content:space-between;align-items:baseline;font-size:12px;color:var(--mut)}
+.vcard .top1 .pick{color:var(--acc);font-weight:600}
+.vcard h2{font-size:21px;font-weight:600;letter-spacing:-.3px;margin:2px 0 1px}
+.vcard .hood{color:var(--mut);font-size:13px}
+.vcard .facts{display:flex;border-top:1px solid #F1EEE9;border-bottom:1px solid #F1EEE9;margin:10px 0;padding:8px 0}
+.vcard .facts div{flex:1;font-size:12px;color:var(--mut)}.vcard .facts b{display:block;font-size:14px;color:var(--txt);font-weight:600}
+.vcard .why{font-size:13px;line-height:1.4;color:#333}
+.vcard .why b{font-weight:600;color:var(--txt)}
+.stamp{position:absolute;top:18px;z-index:5;font-size:15px;font-weight:600;padding:5px 10px;border-radius:8px;background:#fff;opacity:0;letter-spacing:.3px}
+.stamp.like{left:14px;color:var(--grn)}
+.stamp.nope{right:14px;color:var(--acc)}
+.empty{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:var(--mut);font-size:14px;gap:6px}
+.swbtns{display:flex;align-items:center;gap:10px;margin-top:8px}
+.swbtns .no,.swbtns .yes{width:52px;height:52px;border-radius:50%;background:var(--card);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;flex:none}
+.swbtns .no{color:#555}.swbtns .yes{color:var(--grn)}
+.swbtns svg{width:20px;height:20px}
+.swbtns .done{flex:1;height:52px;border-radius:12px;font-size:15px;font-weight:600;background:var(--acc);color:#fff}
+.swbtns .done:disabled{background:var(--bub);color:#9A9690}
+/* pack */
+.stage{flex:1;position:relative;perspective:1200px}
+.pack{position:absolute;left:50%;top:44%;width:200px;height:270px;margin:-135px 0 0 -100px;cursor:pointer}
+.pack .half{position:absolute;left:0;right:0;transition:transform .6s ease,opacity .6s}
+.pack .bot-h{top:0;bottom:0;background:#F1ECE4;border:1px solid #E0D9CE;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;box-shadow:0 1px 2px rgba(0,0,0,.06)}
+.pack .top-h{top:0;height:46%;background:#E8E1D6;border:1px solid #DDD5C9;border-bottom:0;border-radius:12px 12px 0 0;clip-path:polygon(0 0,100% 0,100% 8%,50% 100%,0 8%);z-index:2;transform-origin:top center}
+.pack .pl{font-size:30px;font-weight:600;letter-spacing:-.8px;margin-top:40px}.pack .pl b{color:var(--acc)}
+.pack .ps{font-size:12.5px;color:var(--mut)}
+.pack .pc{font-size:12px;color:var(--mut)}
+.pack .glow{display:none}
+.pack.open{pointer-events:none}
+.pack.open .top-h{transform:rotateX(180deg);opacity:0}
+.pack.open .bot-h{transform:translateY(40px);opacity:0;transition-delay:.2s}
+.hint{position:absolute;left:0;right:0;bottom:8%;text-align:center;color:var(--mut);font-size:13px}
+.revealed .hint{display:none}
+.mcard{position:absolute;left:50%;top:44%;width:236px;height:330px;margin:-165px 0 0 -118px;transform-style:preserve-3d;transition:transform .7s cubic-bezier(.2,.8,.2,1),opacity .3s;opacity:0;cursor:pointer}
+.mcard .face{position:absolute;inset:0;border-radius:16px;backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden;background:var(--card);border:1px solid var(--line);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.mcard .back{display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:600;background:#F1ECE4}
+.mcard .back b{color:var(--acc)}
+.mcard .front{transform:rotateY(180deg)}
+.mcard .inner{height:100%;padding:18px 18px 16px;display:flex;flex-direction:column;position:relative}
+.mcard .inner::before{content:"";position:absolute;inset:0;background:rgba(250,248,245,.55);opacity:0;transition:.4s;pointer-events:none;z-index:3}
+.mcard.pos-l .inner::before,.mcard.pos-r .inner::before{opacity:1}
+.mono{width:48px;height:48px;border-radius:50%;background:var(--bub);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:16px;color:#444}
+.mcard .mt{display:flex;justify-content:space-between;align-items:flex-start}
+.mcard .pct{font-size:12px;color:var(--grn);font-weight:600}
+.mcard h3{font-size:18px;font-weight:600;letter-spacing:-.2px;margin-top:14px;line-height:1.2}
+.mcard .meta{font-size:13px;color:var(--mut);margin-top:3px}
+.mcard .tags{font-size:13px;color:#444;margin-top:14px;padding-top:12px;border-top:1px solid #F1EEE9}
+.gkv{display:flex;justify-content:space-between;font-size:12.5px;padding:7px 0 0;margin-top:7px;border-top:1px solid #F1EEE9}.gkv span:first-child{color:var(--mut)}
+.mcard .move{margin-top:auto;font-size:13px;font-style:italic;color:#555;line-height:1.4}
+.mcard.shown{opacity:1}
+.mcard.flip.pos-c{transform:translate(0,0) rotateY(180deg);z-index:3}
+.mcard.flip.pos-l{transform:translate(-112px,18px) rotate(-6deg) rotateY(180deg) scale(.84);z-index:1}
+.mcard.flip.pos-r{transform:translate(112px,18px) rotate(6deg) rotateY(180deg) scale(.84);z-index:1}
+.pickbtn{opacity:0;transition:.3s 1s;pointer-events:none}.revealed .pickbtn{opacity:1;pointer-events:auto}
+.caption{font-size:12px;color:var(--mut)}
+/* buttons */
+.cta{width:100%;padding:14px;border-radius:12px;font-size:15px;font-weight:600;background:var(--acc);color:#fff}
+.cta:active{opacity:.9}
+.ghost{width:100%;padding:13px;border-radius:12px;font-size:15px;font-weight:500;background:var(--card);border:1px solid var(--line)}
+.pz2{font-size:13px;color:var(--mut);margin:12px 2px 0;display:flex;align-items:center;gap:7px}
+.pz2 .pa{width:20px;height:20px;border-radius:50%;background:var(--bub);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:#444}
+.pz2 b{color:var(--grn);font-weight:500}
+.note{margin-top:12px;font-size:13px;color:var(--mut);line-height:1.5}
+.note b{color:var(--txt);font-weight:500}
+.confetti{display:none}
+.navwrap{display:flex;align-items:center;gap:14px}
+.navdots{display:flex;gap:8px;align-items:center}
+.navdots button{width:8px;height:8px;border-radius:99px;background:#C9C3BA;padding:0}
+.navdots button.on{width:22px;background:#111}
+.navwrap .rl{font-size:12px;color:var(--mut)}
+/* ===== party poster skin ===== */
+@font-face{font-family:"Bricolage Local";src:url(fonts/Bricolage.ttf) format("truetype");font-weight:200 800}
+:root{--paper:#FFF4E0;--ink:#141414;--pink:#FF3D8B;--cob:#2B4BFF;--yel:#FFD23F;--tom:#FF5A36;--grn:#1E9E5A;--mut:#6a6255;--line:#141414;
+--grain:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.08  0 0 0 0 0.06  0 0 0 0 0.02  0 0 0 .09 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+--disp:"Bricolage Grotesque","Bricolage Local","Archivo Black",Impact,sans-serif}
+body{background:#E9DFCB var(--grain)}
+.phone{background:var(--paper) var(--grain);box-shadow:0 0 0 9px #141414,0 20px 50px rgba(0,0,0,.2)}
+.disp,h1,h2,h3,.mhead .nm b,.pack .pl,.mono{font-family:var(--disp);font-weight:800;letter-spacing:-.02em}
+.tag{color:var(--mut);font-size:10px;text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+/* header */
+.mhead{border-bottom:2px solid var(--ink)}
+.av{background:var(--pink);color:var(--ink);border:2px solid var(--ink);font-family:var(--disp);font-weight:800;font-size:16px}
+.av i{color:var(--ink)}
+.mhead .nm b{font-size:22px;line-height:1}.mhead .nm b i{color:var(--pink);font-style:normal}
+.mhead .nm small{color:var(--mut)}
+.rst{color:var(--ink)}
+/* ticket plan card */
+.plan{background:#fff;border:2px solid var(--ink);border-radius:10px}
+.plan.pin{margin:10px 12px 0;padding:0;box-shadow:3px 3px 0 var(--ink);overflow:visible}
+.plan .ph{padding:8px 12px 7px;border-bottom:2px dashed var(--ink);margin:0 0 3px;position:relative;font-family:var(--disp);font-weight:800;font-size:15px;text-transform:uppercase;letter-spacing:.01em}
+.plan .ph::before,.plan .ph::after{content:"";position:absolute;bottom:-8px;width:14px;height:14px;border-radius:50%;background:var(--paper);border:2px solid var(--ink)}
+.plan .ph::before{left:-9px;clip-path:inset(0 0 0 50%)}.plan .ph::after{right:-9px;clip-path:inset(0 50% 0 0)}
+.plan .ph span{font-family:-apple-system,"SF Pro Text",Inter,Arial,sans-serif;text-transform:none;font-size:11.5px;font-weight:600;color:var(--mut)}
+.prow{border-top:0;padding:2.5px 12px;font-size:12.5px;align-items:center}
+.plan.pin .prow:last-child{padding-bottom:8px}
+.prow .k{color:var(--mut)}
+.prow .v{font-weight:600}
+.prow .st{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:#9b917f}
+.prow.ok .st,.prow.pend .st{border:1.5px solid currentColor;border-radius:4px;padding:1px 5px;transform:rotate(-3deg);background:rgba(255,255,255,.6)}
+.prow.ok .st{color:var(--grn)}
+.prow.pend .st{color:var(--pink)}
+.prow.set .st{color:var(--cob)}
+.prow.blank .v{color:#b3a993}
+.prow.flash .v{animation:hl2 1.2s}@keyframes hl2{0%{background:var(--yel)}100%{background:transparent}}
+.plan.big{padding:0 0 6px;box-shadow:4px 4px 0 var(--ink)}.plan.big .ph{font-size:17px;padding:11px 16px 10px}.plan.big .prow{padding:7px 16px;font-size:14.5px}.plan.big .prow .st{font-size:10.5px}
+/* chat */
+.msg{font-size:14px}
+.msg.me{background:var(--cob);color:#fff;border:2px solid var(--ink);border-bottom-right-radius:5px}
+.msg.agent,.btncard,.qcard{background:#fff;border:2px solid var(--ink);box-shadow:3px 3px 0 var(--ink);border-bottom-left-radius:5px;margin-right:4px}
+.msg.ha{background:var(--yel);border:2px solid var(--ink);box-shadow:3px 3px 0 var(--ink)}
+.msg.ya{background:#fff;border:2px solid var(--ink);box-shadow:3px 3px 0 var(--ink);margin-right:4px}
+.msg .who{color:var(--ink);font-weight:800;text-transform:uppercase;font-size:9.5px;letter-spacing:.06em;opacity:.75}
+.msg.sys{color:var(--ink);font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+.typing{background:#fff;border:2px solid var(--ink)}
+.qcard .opts button{border:2px solid var(--ink);font-weight:600;border-radius:8px}
+.qcard .opts button.on{background:var(--yel);color:var(--ink);border-color:var(--ink);box-shadow:2px 2px 0 var(--ink)}
+.qcard .opts button.off{border-color:#c9bfa9;color:#a89f8b}
+/* setlist log */
+.acts{padding:4px 6px 2px}
+.acts .ah{font-family:var(--disp);font-weight:800;font-size:14px;color:var(--ink);text-transform:uppercase;letter-spacing:.01em;align-items:baseline}
+.acts .ah span{font-family:-apple-system,Inter,Arial,sans-serif;font-size:11px;font-weight:600;color:var(--mut);text-transform:none}
+.act{color:var(--ink);font-size:13px}
+.act .ic{width:15px;height:15px;border:2px solid var(--ink);border-radius:3px;color:var(--ink);background:#fff}
+.act .ic svg{width:13px;height:13px;stroke-width:3.2}
+.act.run .ic{border:2px solid var(--ink);border-radius:3px;width:15px;height:15px;animation:none;background:repeating-linear-gradient(45deg,#fff 0 3px,var(--yel) 3px 6px)}
+.act.done .ic{background:var(--yel)}
+.act.hot span:nth-child(2){background:var(--yel);padding:0 3px;font-weight:700}
+.act .tm{color:var(--mut);font-family:"SF Mono",ui-monospace,Menlo,monospace;font-size:10.5px}
+.btncard button{background:var(--pink);color:var(--ink);border:2px solid var(--ink);box-shadow:3px 3px 0 var(--ink);border-radius:10px;font-weight:800;font-size:15px;transition:transform .08s,box-shadow .08s}
+.btncard button:active,.cta:active,.ghost:active,.swbtns button:active,.inbar button:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--ink)!important}
+.btncard button.used{background:#fff;color:var(--mut);box-shadow:none;border-color:#c9bfa9}
+.sum{color:var(--ink);font-weight:600}
+.sum svg{color:var(--grn)}
+/* input */
+.inbar input{border:2px solid var(--ink);background:#fff}
+.inbar button{background:var(--pink);color:var(--ink);border:2px solid var(--ink);width:38px;height:38px;box-shadow:2px 2px 0 var(--ink)}
+/* buttons */
+.cta{background:var(--yel);color:var(--ink);border:2px solid var(--ink);box-shadow:4px 4px 0 var(--ink);border-radius:12px;font-family:var(--disp);font-weight:800;font-size:17px;letter-spacing:-.01em;transition:transform .08s,box-shadow .08s}
+.ghost{background:#fff;border:2px solid var(--ink);box-shadow:3px 3px 0 var(--ink);font-weight:700}
+/* sheets */
+.sheet{background:var(--paper) var(--grain)}
+.grab{background:var(--ink);opacity:.25}
+.shh h1{font-size:32px;line-height:1;letter-spacing:-.03em;margin-top:4px}
+.shh .need{color:var(--pink);font-weight:800;text-transform:uppercase;font-size:11px;letter-spacing:.06em}
+.shh .x{background:#fff;border:2px solid var(--ink);color:var(--ink)}
+.shsub{color:var(--mut);margin-top:4px}
+.toast{background:var(--ink);border-radius:10px;box-shadow:3px 3px 0 var(--pink)}
+/* calendar */
+.calcap{color:var(--mut)}.calcap b{color:var(--ink);font-weight:700}
+.day{border:2px solid var(--ink);border-radius:10px;background:#fff}
+.day .dn{font-family:var(--disp);font-weight:800;font-size:19px}
+.day .wd{color:var(--ink);font-weight:600;text-transform:uppercase;font-size:9.5px;letter-spacing:.05em}
+.day.on{background:var(--pink);border-color:var(--ink);color:var(--ink);box-shadow:2px 2px 0 var(--ink)}.day.on .wd,.day.on .oc{color:var(--ink)}
+.day .best{width:auto;height:auto;font-size:8px;font-weight:800;letter-spacing:.05em;background:var(--yel);color:var(--ink);border:1.5px solid var(--ink);border-radius:3px;padding:0 3px;top:-7px;right:auto;left:50%;transform:translateX(-50%) rotate(-6deg);line-height:1.4}
+.day.on .best{background:var(--yel)}
+.cal{padding-top:8px}
+.day.busy{border:2px dashed #b9ae98;background:transparent}
+/* venue card */
+.vcard{border:2.5px solid var(--ink);border-radius:14px;box-shadow:4px 4px 0 var(--ink);background:#fff}
+.vcard .img{border-bottom:2.5px solid var(--ink);height:44%}
+.stk{position:absolute;z-index:3;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;border:2px solid var(--ink);padding:3px 8px;border-radius:4px;box-shadow:2px 2px 0 var(--ink)}
+.stk.y{background:var(--yel);top:12px;left:12px;transform:rotate(-5deg)}
+.stk.p{background:var(--pink);top:14px;right:12px;transform:rotate(4deg)}
+.vcard h2{font-size:27px;line-height:1;margin:0 0 5px;letter-spacing:-.03em}
+.vcard .hood{color:var(--ink);font-size:13px}
+.vcard .facts{border-top:2px solid var(--ink);border-bottom:2px solid var(--ink);margin:10px 0}
+.vcard .facts b{font-family:var(--disp);font-weight:800;font-size:19px}
+.vcard .facts div{color:var(--mut)}
+.stamp{border:2.5px solid currentColor;font-weight:800;text-transform:uppercase;font-size:18px;background:#fff}
+.stamp.like{color:var(--grn);transform:rotate(-8deg)}.stamp.nope{color:var(--tom);transform:rotate(8deg)}
+.swbtns .no,.swbtns .yes{border:2px solid var(--ink);box-shadow:3px 3px 0 var(--ink);background:#fff;color:var(--ink)}
+.swbtns .yes{background:var(--pink)}
+.swbtns .done{background:var(--yel);color:var(--ink);border:2px solid var(--ink);box-shadow:3px 3px 0 var(--ink);font-family:var(--disp);font-weight:800;font-size:16px}
+.swbtns .done:disabled{background:#fff;color:#a89f8b;border-color:#c9bfa9;box-shadow:none}
+/* pack */
+.pack .bot-h{background:var(--yel);border:2.5px solid var(--ink);box-shadow:5px 5px 0 var(--ink)}
+.pack .top-h{background:var(--pink);border:2.5px solid var(--ink);border-bottom:0}
+.pack .pl{font-size:36px}.pack .pl b{color:var(--pink)}
+.pack .ps{color:var(--ink);font-weight:700;text-transform:uppercase;font-size:11px;letter-spacing:.08em}
+.hint{color:var(--ink);font-weight:700}
+.mcard .face{border:2.5px solid var(--ink);box-shadow:4px 4px 0 var(--ink);border-radius:14px}
+.mcard .back{background:var(--yel);font-family:var(--disp);font-weight:800;font-size:30px}.mcard .back b{color:var(--pink)}
+.mcard .front{background:var(--gc,#fff);color:var(--gt,#141414)}
+.mcard .inner::before{background:rgba(255,244,224,.22)}
+.mono{width:auto;height:auto;border-radius:0;background:none;color:inherit;font-size:54px;line-height:.9;letter-spacing:-.04em}
+.mcard .pct{color:inherit;border:2px solid currentColor;border-radius:4px;padding:2px 6px;font-weight:800;font-size:11px;transform:rotate(4deg);display:inline-block;text-transform:uppercase}
+.mcard h3{font-size:22px;line-height:1.02;margin-top:12px}
+.mcard .meta,.mcard .tags,.gkv span:first-child{color:inherit;opacity:.85}
+.mcard .tags,.gkv{border-top:2px solid currentColor}
+.mcard .tags{font-weight:600}
+.mcard .move{color:inherit}
+.caption{color:var(--ink)}
+/* plan sheet */
+.pz2{color:var(--ink)}.pz2 .pa{background:var(--yel);border:2px solid var(--ink);color:var(--ink);font-weight:800}.pz2 b{color:var(--grn);font-weight:800;text-transform:uppercase;font-size:11px;letter-spacing:.05em}
+.note{color:#3b352c}.note b{color:var(--ink);font-weight:700}
+/* poster */
+.poster{align-self:stretch;background:#fff;border:2.5px solid var(--ink);box-shadow:5px 5px 0 var(--ink);border-radius:12px;overflow:hidden;animation:pop .35s;margin-right:4px}
+.poster .pimg{height:112px;background:center/cover;border-bottom:2.5px solid var(--ink);position:relative}
+.poster .pimg .stk{top:10px;left:10px;background:var(--yel);transform:rotate(-4deg)}
+.poster .pb{padding:12px 14px 8px;background:var(--pink)}
+.poster .date{font-family:var(--disp);font-weight:800;font-size:44px;line-height:.9;letter-spacing:-.04em}
+.poster .time{font-family:var(--disp);font-weight:800;font-size:22px;letter-spacing:-.02em;margin-top:2px}
+.poster .who2{font-weight:800;text-transform:uppercase;letter-spacing:.04em;font-size:12px;margin-top:8px}
+.poster .ven{font-size:13px;font-weight:600}
+.poster .pd{padding:8px 14px 12px;font-size:12.5px;line-height:1.5;position:relative;border-top:2.5px dashed var(--ink)}
+.poster .pd b{font-weight:700}
+.auto .ah{font-family:var(--disp);font-weight:800;font-size:16px;text-transform:uppercase}
+.task{border-top:1.5px dashed #b9ae98;align-items:center}
+.task .cb{width:15px;height:15px;border:2px solid var(--ink);border-radius:3px;flex:none;background:#fff;display:flex;align-items:center;justify-content:center}
+.task .cb.on{background:var(--yel)}.task .cb svg{width:12px;height:12px}
+.task .ts{font-weight:800;text-transform:uppercase;font-size:9.5px;letter-spacing:.05em;color:var(--mut)}.task .ts.live{color:var(--grn)}
+/* confetti */
+.thread>*{flex-shrink:0}
+.confetti{display:block;position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:40}
+.confetti i{position:absolute;top:-14px;width:9px;height:14px;border:1.5px solid var(--ink);animation:fall 2.2s cubic-bezier(.3,.6,.6,1) forwards}
+@keyframes fall{to{transform:translateY(900px) rotate(540deg)}}
+.navdots button.on{background:var(--pink);border:1.5px solid var(--ink)}
+.plan.big .prow{padding:7px 14px!important;font-size:13.5px!important}.plan.big .prow .k{width:88px!important}.plan.big .prow .st{font-size:9px!important;padding:1px 4px}.plan.big .ph span{font-size:11px}
+/* ===== desktop web ===== */
+html,body{height:100%}
+body{display:block;padding:0;margin:0;min-height:0;height:100vh;overflow:hidden;background:var(--paper) var(--grain);gap:0}
+.topnav{height:64px;display:flex;align-items:center;gap:28px;padding:0 24px;border-bottom:2px solid var(--ink);background:var(--paper) var(--grain);position:relative;z-index:5}
+.wm{font-family:var(--disp);font-weight:800;font-size:30px;letter-spacing:-.04em;line-height:1}.wm i{color:var(--pink);font-style:normal}
+.tabs{display:flex;gap:8px}
+.tabs button{font-weight:700;font-size:14px;padding:8px 14px;border-radius:10px;border:2px solid transparent}
+.tabs button.on{background:var(--yel);border-color:var(--ink);box-shadow:2px 2px 0 var(--ink)}
+.tabs button:not(.on):hover{border-color:var(--ink)}
+.who3{margin-left:auto;display:flex;align-items:center;gap:10px}
+.who3 .sd{font-size:10px;text-transform:uppercase;letter-spacing:.06em;font-weight:600;color:var(--mut);margin-right:10px}
+.oav{width:36px;height:36px;border-radius:50%;background:var(--pink);border:2px solid var(--ink);display:flex;align-items:center;justify-content:center;font-family:var(--disp);font-weight:800;font-size:14px}
+.who3 b{display:block;font-size:14px}.who3 small{font-size:12px;color:var(--mut)}
+.view{height:calc(100vh - 64px)}
+#planView{display:grid;grid-template-columns:260px 1fr 340px}
+/* sidebar */
+.side{border-right:2px solid var(--ink);padding:22px 18px;display:flex;flex-direction:column;gap:6px;overflow:auto}
+.sh{font-family:var(--disp);font-weight:800;font-size:14px;text-transform:uppercase;letter-spacing:.01em;margin:6px 0 6px}
+.grp2{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;border:2px solid transparent;font-size:14px;font-weight:600}
+.grp2 small{display:block;font-weight:400;color:var(--mut);font-size:12px}
+.grp2.on{background:#fff;border-color:var(--ink);box-shadow:3px 3px 0 var(--ink)}
+.gav{width:30px;height:30px;border-radius:8px;border:2px solid var(--ink);display:flex;align-items:center;justify-content:center;font-family:var(--disp);font-weight:800;font-size:12px;flex:none}
+.upc{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;font-size:13.5px;border-bottom:1.5px dashed #b9ae98}
+.upc .cb{width:15px;height:15px;border:2px solid var(--ink);border-radius:3px;flex:none;margin-top:2px;background:#fff}
+.upc .cb.run{background:repeating-linear-gradient(45deg,#fff 0 3px,var(--yel) 3px 6px)}
+.upc .cb.on{background:var(--pink)}
+.upc b{display:block;font-weight:700}.upc small{color:var(--mut);font-size:12px}
+.newbtn{margin-top:14px;padding:11px;border-radius:12px;background:var(--yel);border:2px solid var(--ink);box-shadow:3px 3px 0 var(--ink);font-weight:800;font-size:14px}
+.newbtn:active{transform:translate(3px,3px);box-shadow:none}
+.sidefoot{margin-top:auto;font-size:11px;color:var(--mut);line-height:1.5}
+/* center chat */
+.center{display:flex;flex-direction:column;min-width:0;min-height:0}
+.chead2{padding:14px 40px;border-bottom:2px solid var(--ink);display:flex;align-items:baseline;gap:12px}
+.chead2 h2{font-size:24px}.chead2 span{color:var(--mut);font-size:13px}
+.center .thread{padding:24px 40px 12px;gap:10px}
+.center .msg{max-width:62%;font-size:15px;padding:10px 15px}
+.center .msg.agent,.center .btncard,.center .qcard{max-width:62%}
+.center .btncard button{max-width:260px}
+.center .acts{max-width:640px}
+.center .act{font-size:14px}
+.center .inbar{padding:14px 40px 20px;border-top:2px solid var(--ink)}
+.center .inbar input{padding:14px 18px;font-size:15px;border-radius:14px}
+.center .inbar button{width:48px;height:48px;border-radius:12px}
+.center .poster{align-self:center;width:560px;max-width:100%;margin:6px 0 10px}
+.center .poster .pimg{height:210px}
+.center .poster .pb{padding:18px 22px 14px}
+.center .poster .date{font-size:78px}
+.center .poster .time{font-size:34px}
+.center .poster .who2{font-size:14px}
+.center .poster .ven{font-size:15px}
+.center .poster .pd{font-size:14px;padding:12px 22px 16px}
+/* right panel */
+.right{border-left:2px solid var(--ink);padding:20px 18px;overflow:auto;display:flex;flex-direction:column;gap:18px}
+.right .plan.pin{margin:0}
+.box h3{font-size:15px;text-transform:uppercase;margin-bottom:6px;letter-spacing:.01em}
+#feed .fi{display:flex;gap:9px;font-size:13px;padding:6px 0;border-top:1.5px dashed #b9ae98;line-height:1.35}
+#feed .fi:first-child{border-top:0}
+#feed .fi .cb{width:14px;height:14px;border:2px solid var(--ink);border-radius:3px;background:var(--yel);flex:none;margin-top:2px;display:flex;align-items:center;justify-content:center}
+#feed .fi .cb svg{width:11px;height:11px}
+#feed .fi .tm{margin-left:auto;font-family:ui-monospace,Menlo,monospace;font-size:10.5px;color:var(--mut);flex:none}
+#feed .empty2{font-size:13px;color:var(--mut)}
+#autoBox{display:none}
+#autoBox .task{font-size:13px}
+/* modals */
+.sheet{position:fixed;inset:0;z-index:30;background:rgba(255,244,224,.82);padding:0;display:flex;align-items:center;justify-content:center;transform:none;opacity:0;pointer-events:none;transition:opacity .25s}
+.sheet.open{opacity:1;pointer-events:auto}
+.modal{width:960px;max-height:860px;background:var(--paper) var(--grain);border:2.5px solid var(--ink);border-radius:16px;box-shadow:8px 8px 0 var(--ink);padding:24px 28px 18px;display:flex;flex-direction:column;transform:translateY(16px);transition:transform .3s}
+.sheet.open .modal{transform:none}
+.modal .shh h1{font-size:40px}
+.modal .sheetbar{padding:16px 0 0!important;border-top:2px dashed var(--ink);margin-top:16px!important}
+.modal .sheetbar input{padding:12px 16px;font-size:14.5px}
+.modal .cal{margin:0;padding:8px 0 2px}
+.vgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:16px}
+.vc{background:#fff;border:2.5px solid var(--ink);border-radius:14px;box-shadow:4px 4px 0 var(--ink);overflow:hidden;position:relative;display:flex;flex-direction:column;transition:transform .15s,opacity .2s}
+.vc .img{height:150px;background:center/cover;border-bottom:2.5px solid var(--ink);position:relative}
+.vc .body{padding:12px 14px 14px;display:flex;flex-direction:column;flex:1}
+.vc h2{font-size:24px;line-height:1;letter-spacing:-.03em}
+.vc .hood{font-size:12.5px;margin-top:4px}
+.vc .facts{display:flex;border-top:2px solid var(--ink);border-bottom:2px solid var(--ink);margin:10px 0;padding:6px 0}
+.vc .facts div{flex:1;font-size:11.5px;color:var(--mut)}.vc .facts b{display:block;font-family:var(--disp);font-weight:800;font-size:18px;color:var(--ink)}
+.vc .why{font-size:12.5px;line-height:1.4}.vc .why b{font-weight:700}
+.vc .vb{display:flex;gap:8px;margin-top:auto;padding-top:12px}
+.vc .vb button{flex:1;padding:8px;border-radius:10px;border:2px solid var(--ink);font-weight:800;font-size:13.5px;box-shadow:2px 2px 0 var(--ink)}
+.vc .vb .ok{background:var(--pink)}.vc .vb .sk{background:#fff}
+.vc .vb button:active{transform:translate(2px,2px);box-shadow:none}
+.vc.yes{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--ink)}
+.vc.yes .vb .ok{background:var(--ink);color:#fff}
+.vc.no{opacity:.45}
+.vc .stamp3{position:absolute;top:58px;left:50%;transform:translateX(-50%) rotate(-8deg);font-weight:800;font-size:22px;letter-spacing:.04em;color:var(--grn);border:3px solid var(--grn);background:#fff;padding:3px 12px;border-radius:6px;display:none}
+.vc.yes .stamp3{display:block}
+.mfoot{display:flex;align-items:center;justify-content:space-between;margin-top:18px;gap:16px}
+.mfoot .cta{width:auto;padding:13px 26px}
+.mfoot .cta:disabled{background:#fff;color:#a89f8b;border-color:#c9bfa9;box-shadow:none}
+.mfoot span{font-size:13px;color:var(--mut)}
+.vempty{grid-column:1/-1;text-align:center;color:var(--mut);padding:60px 0}
+#sh-pack .modal{height:780px}
+#sh-pack .stage{min-height:0}
+#sh-pack .pack{top:48%}
+#sh-pack .mcard{width:264px;height:372px;margin:-186px 0 0 -132px;top:48%}
+#sh-pack .mcard.flip.pos-c{transform:translate(0,-6px) rotateY(180deg)}
+#sh-pack .mcard.flip.pos-l{transform:translate(-300px,10px) rotate(-3deg) rotateY(180deg)}
+#sh-pack .mcard.flip.pos-r{transform:translate(300px,10px) rotate(3deg) rotateY(180deg)}
+#sh-pack .mcard .inner::before{display:none}
+#sh-pack .mcard.pos-c .face{box-shadow:7px 7px 0 var(--ink)}
+#sh-pack .mcard .mono{font-size:64px}
+#sh-pack .pickbtn{display:flex;align-items:center;justify-content:center;gap:18px}
+#sh-pack .pickbtn .cta{width:auto;padding:13px 28px}
+#sh-pack .pickbtn .caption{margin:0!important}
+.planwrap{display:grid;grid-template-columns:1.25fr 1fr;gap:28px;margin-top:16px}
+.planwrap .plan.big{margin:0!important}
+.planwrap .side2{display:flex;flex-direction:column}
+.planwrap .pz2{margin-top:0}
+.toast{position:fixed;left:50%;bottom:110px;transform:translate(-50%,8px);right:auto;width:auto;max-width:560px;z-index:70}
+.toast.show{transform:translate(-50%,0)}
+.confetti{position:fixed}
+/* venue portal */
+#venueView{display:none;overflow:auto;padding:26px 40px 30px}
+.vhead{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:18px}
+.vhead h1{font-size:44px;line-height:1;letter-spacing:-.04em}
+.vhead p{color:var(--mut);font-size:14px;margin-top:4px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:22px}
+.statc{background:#fff;border:2px solid var(--ink);border-radius:12px;box-shadow:3px 3px 0 var(--ink);padding:12px 16px}
+.statc .n{font-family:var(--disp);font-weight:800;font-size:40px;letter-spacing:-.03em;line-height:1}
+.statc .l{font-size:12.5px;color:var(--mut);margin-top:4px}
+.statc:nth-child(1){background:var(--yel)}
+.vcols{display:grid;grid-template-columns:1.45fr 1fr;gap:26px;align-items:start}
+.mcal{background:#fff;border:2px solid var(--ink);border-radius:12px;box-shadow:4px 4px 0 var(--ink);padding:14px 16px 16px}
+.mcal .mh{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+.mcal .mh h3{font-size:22px}.mcal .mh span{font-size:12px;color:var(--mut)}
+.mgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.mgrid .dow{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--mut);padding-left:4px}
+.mday{height:76px;border:1.5px solid #d8cdb7;border-radius:8px;padding:5px 6px;position:relative;cursor:pointer;font-size:11px;display:flex;flex-direction:column;gap:3px;background:#fff}
+.mday.blank{border:0;background:none;cursor:default}
+.mday .dn{font-family:var(--disp);font-weight:800;font-size:16px;line-height:1}
+.mday.dead{background:var(--yel);border:2px solid var(--ink)}
+.mday .lab{font-size:9.5px;font-weight:700;line-height:1.2}
+.mday .bk2{background:var(--pink);border:2px solid var(--ink);border-radius:5px;padding:2px 4px;font-size:9.5px;font-weight:800;line-height:1.2;transform:rotate(-2deg)}
+.mday .bk2.cob{background:var(--cob);color:#fff}
+.mday .rq{border:1.5px dashed var(--ink);border-radius:5px;padding:1px 4px;font-size:9.5px;font-weight:700;background:#fff}
+.mday:not(.blank):not(.dead):hover{border-color:var(--ink)}
+.legend{display:flex;gap:16px;margin-top:10px;font-size:11.5px;color:var(--mut)}
+.legend i{display:inline-block;width:11px;height:11px;border:1.5px solid var(--ink);border-radius:3px;margin-right:5px;vertical-align:-1px}
+.rcol{display:flex;flex-direction:column;gap:18px}
+.rq2{background:#fff;border:2px solid var(--ink);border-radius:12px;box-shadow:3px 3px 0 var(--ink);padding:12px 14px;position:relative}
+.rq2 .from{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--mut)}
+.rq2 h4{font-size:15px;font-weight:700;margin:3px 0 3px}
+.rq2 .det{font-size:13px;color:#3b352c;line-height:1.45}
+.rq2 .ask{font-size:13px;margin-top:3px}.rq2 .ask b{background:var(--yel);padding:0 3px}
+.rq2 .rb{display:flex;gap:8px;margin-top:10px}
+.rq2 .rb button{padding:7px 14px;border-radius:9px;border:2px solid var(--ink);font-weight:800;font-size:13px;box-shadow:2px 2px 0 var(--ink);background:#fff}
+.rq2 .rb .acc{background:var(--yel)}.rq2 .rb .dec{border-color:transparent;box-shadow:none;color:var(--mut)}
+.rq2 .ci{display:none;gap:8px;margin-top:10px}.rq2 .ci input{flex:1;border:2px solid var(--ink);border-radius:9px;padding:7px 10px;font-size:13px}
+.rq2 .ci button{padding:7px 12px;border-radius:9px;border:2px solid var(--ink);background:var(--pink);font-weight:800;font-size:13px}
+.rq2 .st2{position:absolute;right:14px;top:12px;font-weight:800;font-size:13px;letter-spacing:.05em;border:2px solid currentColor;border-radius:5px;padding:2px 8px;transform:rotate(-5deg);display:none;background:#fff}
+.rq2.acc .st2{display:block;color:var(--grn)}.rq2.ctr .st2{display:block;color:var(--cob)}.rq2.dec .st2{display:block;color:var(--mut)}
+.rq2.acc .rb,.rq2.ctr .rb,.rq2.dec .rb,.rq2.ctr .ci{display:none}
+.sets{background:#fff;border:2px solid var(--ink);border-radius:12px;box-shadow:3px 3px 0 var(--ink);padding:12px 14px}
+.srow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 0;border-top:1.5px dashed #d0c5ae;font-size:13px}
+.srow:first-of-type{border-top:0}
+.srow span{color:var(--mut)}
+.srow input{width:190px;border:2px solid var(--ink);border-radius:8px;padding:5px 9px;font-size:13px;font-weight:600;text-align:right}
+.srow .fee{font-weight:700}
+.h3v{font-family:var(--disp);font-weight:800;font-size:17px;text-transform:uppercase;margin-bottom:8px;display:flex;justify-content:space-between;align-items:baseline}
+.h3v span{font-family:-apple-system,Inter,Arial,sans-serif;text-transform:none;font-size:12px;font-weight:600;color:var(--mut)}
+.center .btncard button{display:block}
+#planView{grid-template-columns:250px 1fr 370px}
+.right .plan.pin .prow{font-size:13px}.right .plan.pin .prow .k{width:92px}
+.mday{height:66px}.vhead{margin-bottom:14px}.vhead h1{font-size:40px}.stats{margin-bottom:18px}.statc{padding:10px 16px}.statc .n{font-size:36px}
+.srow{padding:5px 0}
+</style></head>
+<body>
+<div class="topnav">
+  <div class="wm">mixer<i>.</i></div>
+  <div class="tabs"><button id="tabPlan" class="on" onclick="tab('plan')">Plan a mixer</button><button id="tabVenue" onclick="tab('venue')">Venue portal</button></div>
+  <div class="who3"><span class="sd">Sample data</span><div class="oav" id="navAv">KP</div><div><b id="navName">KWEST Patagonia</b><small id="navRole">Organizer · 40 members</small></div></div>
+</div>
+
+<div class="view" id="planView">
+  <aside class="side">
+    <div class="sh">Your groups</div>
+    <div class="grp2 on"><span class="gav" style="background:var(--pink)">KP</span><div>KWEST Patagonia<small>40 members</small></div></div>
+    <div class="grp2"><span class="gav" style="background:var(--yel)">CC</span><div>Consulting Club<small>120 members</small></div></div>
+    <div class="grp2"><span class="gav" style="background:var(--cob);color:#fff">S3</span><div>Section 3<small>68 members</small></div></div>
+    <div class="sh" style="margin-top:18px">Upcoming mixers</div>
+    <div class="upc" id="upc1"><span class="cb run"></span><div><b>Planning…</b><small>KWEST Patagonia · with mixer</small></div></div>
+    <div class="upc"><span class="cb"></span><div><b>Draft · late Oct</b><small>Section 3 · not started</small></div></div>
+    <button class="newbtn" onclick="restart(0)">+ New mixer</button>
+    <div class="sidefoot">Demo: ← → keys or #start #picks #pack #plan #booked #venue</div>
+  </aside>
+
+  <main class="center">
+    <div class="chead2"><h2>New mixer</h2><span>Chatting with mixer, your planning agent</span></div>
+    <div class="thread" id="thread"></div>
+    <div class="inbar"><input id="mainIn" placeholder="Message mixer, e.g. “keep it under $400”"><button onclick="mainSend()" aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg></button></div>
+  </main>
+
+  <aside class="right">
+    <div class="plan pin" id="pinPlan"><div class="ph">Plan so far <span id="planStat"></span></div></div>
+    <div class="box" id="feedBox"><h3>Agent activity</h3><div id="feed"><div class="empty2">Nothing yet. Tell mixer what you want.</div></div></div>
+    <div class="box auto" id="autoBox"></div>
+  </aside>
+</div>
+
+<div class="view" id="venueView">
+  <div class="vhead"><div><h1>Copper Owl Tavern</h1><p>Venue portal · Evanston · signed in as the manager · sample data</p></div></div>
+  <div class="stats">
+    <div class="statc"><div class="n" id="statDead">6</div><div class="l">Dead nights listed (Oct)</div></div>
+    <div class="statc"><div class="n" id="statBooked">4</div><div class="l">Groups booked this month</div></div>
+    <div class="statc"><div class="n" id="statDep">$1,550</div><div class="l">Deposits held</div></div>
+    <div class="statc"><div class="n">$2,100</div><div class="l">Avg tab per group (sample)</div></div>
+  </div>
+  <div class="vcols">
+    <div class="mcal">
+      <div class="mh"><h3>October 2026</h3><span>Click a night to list or unlist it for groups</span></div>
+      <div class="mgrid" id="mgrid"></div>
+      <div class="legend"><span><i style="background:var(--yel)"></i>Dead night · open to groups</span><span><i style="background:var(--pink)"></i>Booked via mixer</span><span><i style="background:#fff;border-style:dashed"></i>Request pending</span></div>
+    </div>
+    <div class="rcol">
+      <div><div class="h3v">Incoming requests <span>from mixer agents</span></div>
+        <div style="display:flex;flex-direction:column;gap:14px" id="reqs"></div></div>
+      <div class="sets"><div class="h3v">Your deal settings <span>agents negotiate within these</span></div>
+        <div class="srow"><span>Capacity</span><input value="60"></div>
+        <div class="srow"><span>Min group size</span><input value="30"></div>
+        <div class="srow"><span>Group deposit</span><input value="$400"></div>
+        <div class="srow"><span>Offer</span><input value="Free first round for 50+"></div>
+        <div class="srow"><span>mixer fee</span><span class="fee">[X]% of final tab</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="sheet" id="sh-picks"><div class="modal">
+  <div class="shh"><div><div class="need">Needs your decision <span class="tag">Sample data</span></div><h1>Approve my picks</h1></div><button class="x" onclick="closeSheet()" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+  <div class="calcap">Synced with your group's calendar. <b>Wed Oct 7</b> is your best night. Pick another night to see what's open.</div>
+  <div class="cal" id="cal"></div>
+  <div class="vgrid" id="vgrid"></div>
+  <div class="mfoot"><span>Approved venues get held while I find you a group.</span><button class="cta" id="picksDone" disabled onclick="picksDone()">Approve selected</button></div>
+  <div class="inbar sheetbar"><input class="shin" placeholder="Tell mixer, e.g. “show cheaper ones”"><button aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg></button></div>
+</div></div>
+
+<div class="sheet" id="sh-pack"><div class="modal">
+  <div class="shh"><div><div class="need">Needs your decision <span class="tag">Sample data</span></div><h1 id="packTitle">Your matches</h1></div><button class="x" onclick="closeSheet()" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+  <p class="shsub" id="packSub">3 groups are free Wed Oct 7 and their agents said yes.</p>
+  <div class="stage" id="stage">
+    <div class="pack" id="pack" onclick="openPack()">
+      <div class="glow"></div>
+      <div class="half bot-h"><div class="pl">mixer<b>.</b></div><div class="ps">3 groups matched</div></div>
+      <div class="half top-h"></div>
+    </div>
+    <div class="hint">Click to open</div>
+  </div>
+  <div class="pickbtn"><p class="caption">Click a card to bring it forward</p><button class="cta" style="white-space:nowrap" onclick="pickMatch()">Match with <span id="pickName">Kellogg Hiking Club</span></button></div>
+  <div class="inbar sheetbar"><input class="shin" placeholder="Tell mixer, e.g. “who's the best fit?”"><button aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg></button></div>
+</div></div>
+
+<div class="sheet" id="sh-plan"><div class="modal">
+  <div class="shh"><div><div class="need">Needs your OK <span class="tag">Sample data</span></div><h1>Approve the plan</h1></div><button class="x" onclick="closeSheet()" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+  <p class="shsub">Both agents agreed on this. Priya already signed off.</p>
+  <div class="planwrap">
+    <div class="plan big" id="bigPlan"><div class="ph">Shared plan <span>Kellogg Hiking Club × you</span></div></div>
+    <div class="side2">
+      <div class="pz2"><span class="pa">P</span>Priya, Hiking Club organizer · <b>Approved</b></div>
+      <div class="note">Approving books <b>Copper Owl Tavern</b> and places the <b>$400 group deposit</b>, $200 per group, credited to the bar tab on the night.<br><br>After that I'll send invites to both groups, set up 6 shared rides, keep a backup venue on hold, and split the tab afterwards.</div>
+      <div style="margin-top:auto;display:flex;flex-direction:column;gap:10px;padding-top:16px">
+        <button class="cta" onclick="approvePlan()">Approve and book</button>
+        <button class="ghost" onclick="changePlan()">Change something</button>
+      </div>
+    </div>
+  </div>
+  <div class="inbar sheetbar"><input class="shin" placeholder="Tell mixer, e.g. “ask for 60/40”"><button aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg></button></div>
+</div></div>
+
+<div class="toast" id="toast"></div>
+<div class="confetti" id="confetti"></div>
+<div id="nav" style="display:none"></div>
+
+<script>
+const $=s=>document.querySelector(s);
+const CHK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+let clk=0;const clock=()=>'12:0'+(2+Math.min(7,Math.floor(clk++/3)));
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+// ---------- plan rows
+const PLAN=[['night','Night'],['venue','Venue'],['group','Group match'],['head','Headcount'],['dep','Deposit split'],['theme','Theme']];
+const PLAN0={night:['Finding…','blank','Pending'],venue:['—','blank','Pending'],group:['—','blank','Pending'],head:['40 (your group)','blank','Pending'],dep:['$400 total','blank','Pending'],theme:['—','blank','Pending']};
+function buildPlan(){['#pinPlan','#bigPlan'].forEach(sel=>{const el=$(sel);el.querySelectorAll('.prow').forEach(r=>r.remove());
+ PLAN.forEach(([k,l])=>{const r=document.createElement('div');r.className='prow';r.dataset.k=k;r.innerHTML=`<span class="k">${l}</span><span class="v"></span><span class="st"></span>`;el.appendChild(r)})});
+ Object.entries(PLAN0).forEach(([k,v])=>setPlan(k,...v,true))}
+function setPlan(k,val,state,label,quiet){document.querySelectorAll(`.prow[data-k="${k}"]`).forEach(r=>{r.className='prow '+state+(quiet?'':' flash');r.querySelector('.v').textContent=val;r.querySelector('.st').textContent=label||(state==='ok'?'Agreed':'')});
+ const n=document.querySelectorAll('#pinPlan .prow.ok').length;$('#planStat').textContent=n===6?'All agreed':n+' of 6 agreed'}
+// ---------- run control
+let T=0,ff=-1,stage=0,pend={};
+const fast=()=>stage<ff;
+async function D(ms){const t=T;await sleep(fast()?0:ms);if(t!==T)throw 'cancel'}
+function waitFor(key,auto){const t=T;return new Promise((res,rej)=>{pend[key]=v=>{delete pend[key];t===T?res(v):rej('cancel')};if(fast())setTimeout(()=>pend[key]&&pend[key](auto),0)})}
+function fire(key,v){pend[key]&&pend[key](v)}
+// ---------- thread helpers
+const th=$('#thread');const scroll=()=>th.scrollTop=th.scrollHeight;
+function add(html,cls,tag='div'){const d=document.createElement(tag);d.className=cls;d.innerHTML=html;th.appendChild(d);scroll();return d}
+const me=t=>add(t,'msg me');
+const agent=t=>add(t,'msg agent');
+const sys=t=>add(t,'msg sys');
+const sum=t=>add(CHK+t,'sum');
+const ya=t=>add('<span class="who">Your agent</span>'+t,'msg ya');
+const ha=t=>add('<span class="who">Hiking Club\'s agent</span>'+t,'msg ha');
+async function typing(ms=700){if(fast())return;const t=add('<i></i><i></i><i></i>','typing');try{await D(ms)}finally{t.remove()}}
+function feedAdd(t){const f=$('#feed');const e=f.querySelector('.empty2');if(e)e.remove();const d=document.createElement('div');d.className='fi';d.innerHTML=`<span class="cb">${CHK}</span><span>${t}</span><span class="tm">${clock()}</span>`;f.prepend(d);while(f.children.length>7)f.lastElementChild.remove()}
+async function actlog(title,lines){const box=add(`<div class="ah">${title} <span>Working…</span></div>`,'acts');
+ for(const [txt,hot] of lines){const a=document.createElement('div');a.className='act run'+(hot?' hot':'');a.innerHTML=`<span class="ic"></span><span>${txt}</span><span class="tm">${clock()}</span>`;box.appendChild(a);scroll();await D(650);a.className=a.className.replace('run','done');a.querySelector('.ic').innerHTML=CHK;feedAdd(txt)}
+ box.querySelector('.ah span').textContent='Done';return box}
+async function btnCard(text,label,key,cls=''){const c=add(`${text}<button id="btn-${key}">${label}</button>`,'btncard '+cls);const b=c.querySelector('button');
+ b.onclick=()=>{if(b.classList.contains('used'))return;fire('btn-'+key)};const jump=stage===ff;const w=waitFor('btn-'+key);if(jump){ff=-1;setTimeout(()=>fire('btn-'+key),300)}await w;b.classList.add('used');b.textContent='Opened';return c}
+async function question(q,opts){const c=add(q+'<div class="opts">'+opts.map(o=>`<button>${o}</button>`).join('')+'</div>','qcard');const bs=[...c.querySelectorAll('button')];
+ bs.forEach(b=>b.onclick=()=>fire('q'+q,b.textContent));const auto=setTimeout(()=>fire('q'+q,opts[0]),7000);
+ const v=await waitFor('q'+q,opts[0]);clearTimeout(auto);bs.forEach(b=>b.classList.add(b.textContent===v?'on':'off'));return v}
+// ---------- sheets
+let openKey=null;
+function openSheet(k){document.querySelectorAll('.sheet').forEach(s=>s.classList.toggle('open',s.id==='sh-'+k));openKey=k;[...$('#nav').children].forEach((b,j)=>b.classList.toggle('on',NAVK[j]===k))}
+function closeSheet(){document.querySelectorAll('.sheet').forEach(s=>s.classList.remove('open'));openKey=null;$('#toast').classList.remove('show')}
+async function sheet(k,doneKey,auto){openSheet(k);const v=await waitFor(doneKey,auto);closeSheet();await D(450);return v}
+let toastT;function toast(t){const e=$('#toast');e.innerHTML=t;e.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>e.classList.remove('show'),3200)}
+document.querySelectorAll('.shin').forEach(i=>{const go=()=>{const t=i.value.trim();if(!t)return;i.value='';sheetChat(t)};i.addEventListener('keydown',e=>{if(e.key==='Enter')go()});i.nextElementSibling.onclick=go});
+function sheetChat(t){const l=t.toLowerCase();
+ if(openKey==='picks'){if(l.includes('cheap')){sortCheap=true;selectDay(selDay);toast('Sorted cheapest first for '+dlabel(selDay)+'.')}else toast('Got it. I\'ll factor “'+t.replace(/</g,'&lt;')+'” into my picks.')}
+ else if(openKey==='pack')toast(l.includes('best')||l.includes('fit')?'Kellogg Hiking Club: 92% match, free the same night, and their agent already said yes.':'Noted. I\'ll pass that on to their agents.');
+ else if(openKey==='plan'){if(l.includes('60/40')){setPlan('dep','$400 · 60/40 ($240/$160)','pend','Asking…');toast('Asking Hiking Club\'s agent for 60/40…');setTimeout(()=>{setPlan('dep','$400 · 60/40 ($240/$160)','pend','Needs your OK');toast('Hiking Club\'s agent accepted 60/40. Just needs your OK.')},1600)}else toast('On it. I\'ll bring that to Hiking Club\'s agent.')}}
+function mainSend(){const i=$('#mainIn');const t=i.value.trim();if(!t)return;i.value='';me(t.replace(/</g,'&lt;'));setTimeout(()=>agent('Got it, I\'ll factor that in.'),700)}
+$('#mainIn').addEventListener('keydown',e=>{if(e.key==='Enter')mainSend()});
+// ---------- venues / picks
+const venues=[
+ {n:'Copper Owl Tavern',img:'img/copper-owl.jpg',h:'Evanston · 0.7 mi',cap:60,dep:400,nights:{7:'9pm–late',11:'4–8pm',14:'9pm–late',18:'4–8pm'},why:'Open on your free night, fits 60, and I negotiated a free first round.',held:'5pm',g:'linear-gradient(135deg,#8b5cf6,#2b1d6b)',c:'#8b5cf6'},
+ {n:'The Lantern Room',img:'img/lantern-room.jpg',h:'Evanston · 0.4 mi from campus',cap:80,dep:500,nights:{6:'8–11pm',7:'9pm–late',13:'8–11pm',14:'9pm–late'},why:'Closest to campus and fits 80. A good backup.',held:'6pm',g:'linear-gradient(135deg,#ff2e88,#6a1b5e)',c:'#ff2e88'},
+ {n:'Birch & Barrel',img:'img/birch-barrel.jpg',h:'Evanston · 1.1 mi',cap:70,dep:350,nights:{7:'8–11pm',8:'8–11pm',12:'7–10pm',15:'8–11pm'},why:'Fire-pit patio suits your outdoorsy crowd.',held:'7pm',g:'linear-gradient(135deg,#f59e0b,#7c2d12)',c:'#ffb547'},
+ {n:'Juniper & Jive',img:'img/juniper-jive.jpg',h:'Wicker Park · 25 min',cap:90,dep:450,nights:{7:'8pm–12am',12:'8pm–12am',14:'8pm–12am'},why:'Biggest dance floor, fits 90. 25 minutes away.',held:'5pm',g:'linear-gradient(135deg,#36d1c4,#5b2bb5)',c:'#36d1c4'},
+ {n:'Neon Taco Social',img:'img/neon-taco.jpg',h:'River North · Purple Line + 8 min',cap:120,dep:300,nights:{6:'7–10pm',8:'9pm–1am',13:'7–10pm',15:'9pm–1am'},why:'Karaoke stage, and the cheapest deposit at $300',held:'8pm',g:'linear-gradient(135deg,#ffb547,#b8406b)',c:'#fb923c'},
+ {n:'Starlight Lanes',img:'img/starlight.jpg',h:'Evanston · 1.4 mi',cap:100,dep:320,nights:{11:'3–7pm',13:'9pm–late',18:'3–7pm'},why:'Glow bowling breaks the ice between groups',held:'6pm',g:'linear-gradient(135deg,#6366f1,#1e1b4b)',c:'#818cf8'}
+];
+const busy=[9,10,16,17];const WD=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const dlabel=d=>WD[new Date(2026,9,d).getDay()]+' Oct '+d;
+const grid=$('#vgrid');let approved=[],skipped=[],selDay=7,sortCheap=false;
+const cal=$('#cal');
+for(let d=5;d<=18;d++){const open=venues.filter(v=>v.nights[d]);const isB=busy.includes(d);const el=document.createElement('button');el.className='day'+(isB?' busy':'')+(!isB&&!open.length?' none':'');el.dataset.d=d;
+ el.innerHTML=`<div class="wd">${WD[new Date(2026,9,d).getDay()]}</div><div class="dn">${d}</div>${d===7?'<span class="best">best night</span>':''}<div class="oc">${isB?'busy':open.length?open.length+' open':'none'}</div>`;
+ if(!isB)el.onclick=()=>selectDay(d);cal.appendChild(el)}
+function selectDay(d){selDay=d;[...cal.children].forEach(c=>c.classList.toggle('on',+c.dataset.d===d));grid.innerHTML='';
+ let open=venues.filter(v=>v.nights[d]);if(sortCheap)open=open.slice().sort((a,b)=>a.dep-b.dep);open=open.slice(0,3);
+ if(!open.length){grid.innerHTML='<div class="vempty">Nothing open that night. Try another day.</div>';return}
+ open.forEach((v,i)=>{const c=document.createElement('div');c.className='vc'+(approved.includes(v.n)?' yes':'')+(skipped.includes(v.n)?' no':'');
+  c.innerHTML=`<div class="img" style="background-image:url(${v.img})">${i===0&&!sortCheap?'<span class="stk y">Top pick</span>':''}<span class="stk p">Held till ${v.held}</span></div><span class="stamp3">Approved</span><div class="body"><h2>${v.n}</h2><div class="hood">${v.h} · <b>${dlabel(d)}, ${v.nights[d]}</b></div><div class="facts"><div><b>${v.cap}</b>capacity</div><div><b>$${v.dep}</b>group deposit</div></div><div class="why"><b>Why I picked it:</b> ${v.why}</div><div class="vb"><button class="sk">Skip</button><button class="ok">${approved.includes(v.n)?'Approved':'Approve'}</button></div></div>`;
+  c.querySelector('.ok').onclick=()=>{skipped=skipped.filter(x=>x!==v.n);if(approved.includes(v.n))approved=approved.filter(x=>x!==v.n);else approved.push(v.n);updDone();selectDay(selDay)};
+  c.querySelector('.sk').onclick=()=>{approved=approved.filter(x=>x!==v.n);if(!skipped.includes(v.n))skipped.push(v.n);updDone();selectDay(selDay)};
+  grid.appendChild(c)})}
+function updDone(){const b=$('#picksDone');b.disabled=!approved.length;b.textContent=approved.length?`Approve selected (${approved.length})`:'Approve selected'}
+function picksDone(){if(approved.length)fire('picks',approved.slice())}
+// ---------- pack
+const groups=[
+ {n:'Wine & Cheese Club',gc:'#FFD23F',gt:'#141414',ini:'WC',org:'Dana',past:2,s:22,t:['chill','formal-ish','foodie'],c:84,m:'Pairs a Malbec with any conversation.',c1:'#36d1c4',c2:'#8b5cf6'},
+ {n:'Kellogg Hiking Club',gc:'#FF3D8B',gt:'#141414',ini:'KH',org:'Priya',past:4,s:18,t:['outdoorsy','karaoke','early risers'],c:92,m:'Closes out the bar, still summits at 7am.',c1:'#ff2e88',c2:'#ffb547'},
+ {n:'KWEST Japan Squad',gc:'#2B4BFF',gt:'#FFFFFF',ini:'JS',org:'Kenji',past:1,s:35,t:['rowdy','karaoke','late night'],c:88,m:'Twelve karaoke songs, zero mercy.',c1:'#8b5cf6',c2:'#ff2e88'}
+];
+const stage_=$('#stage');const pos=['pos-l','pos-c','pos-r'];let order=[0,1,2];
+groups.forEach((g,i)=>{const d=document.createElement('div');d.className='mcard';d.style.setProperty('--gc',g.gc);d.style.setProperty('--gt',g.gt);d.style.setProperty('--c1',g.c1);d.style.setProperty('--c2',g.c2);
+ d.innerHTML=`<div class="face back">mixer<b>.</b></div><div class="face front"><div class="inner"><div class="mt"><div class="mono">${g.ini}</div><span class="pct">${g.c}% match</span></div><h3>${g.n}</h3><div class="meta">${g.s} people · free Wed Oct 7</div><div class="tags">${g.t.join(' · ')}</div><div class="gkv"><span>Organizer</span><span>${g.org}</span></div><div class="gkv"><span>Past mixers</span><span>${g.past}</span></div><div class="move">“${g.m}”</div></div></div>`;
+ d.onclick=()=>{if(!d.classList.contains('flip'))return;const p=order.indexOf(i);if(p===1)return;const c=order[1];order[1]=i;order[p]=c;place()};stage_.appendChild(d)});
+function place(){[...stage_.querySelectorAll('.mcard')].forEach((d,i)=>{d.classList.remove(...pos);d.classList.add(pos[order.indexOf(i)])});$('#pickName').textContent=groups[order[1]].n}
+function openPack(){if($('#pack').classList.contains('open'))return;$('#pack').classList.add('open');const cs=[...stage_.querySelectorAll('.mcard')];
+ setTimeout(()=>cs.forEach(d=>d.classList.add('shown')),350);
+ cs.forEach((d,i)=>setTimeout(()=>{d.classList.add('flip');place()},700+i*220));
+ setTimeout(()=>{$('#sh-pack').classList.add('revealed');$('#packTitle').textContent='Pick a group'},700)}
+function resetPack(){$('#pack').classList.remove('open');$('#sh-pack').classList.remove('revealed');order=[0,1,2];stage_.querySelectorAll('.mcard').forEach(d=>d.className='mcard');$('#packTitle').textContent='Your matches';$('#pickName').textContent='Kellogg Hiking Club'}
+function pickMatch(){fire('pack',groups[order[1]])}
+// ---------- plan sheet
+function approvePlan(){fire('plan',1)}
+function changePlan(){const v=prompt('What should your agent change? (e.g. 60/40 split, 8:30pm)','60/40 split');if(v)sheetChat(v)}
+// ---------- confetti
+function confetti(){const c=$('#confetti');c.innerHTML='';const cl=['#FF3D8B','#2B4BFF','#FFD23F','#FF5A36'];for(let i=0;i<60;i++){const e=document.createElement('i');e.style.left=Math.random()*100+'%';e.style.background=cl[i%4];e.style.animationDelay=Math.random()*.8+'s';e.style.animationDuration=(1.8+Math.random()*1.4)+'s';c.appendChild(e)}setTimeout(()=>c.innerHTML='',4000)}
+// ---------- THE FLOW
+async function flow(){
+ me('Plan a mixer for KWEST Patagonia. ~40 of us, outdoorsy vibe, sometime in the next 2 weeks, under $500 deposit 🎉');
+ await typing(900);
+ agent('Sounds fun. I\'ll handle calendars, venues, and finding a group to co-host with. Two quick questions:');
+ await D(400);
+ const pub=await question('Public or invite-only?',['Public','Invite-only']);
+ await D(300);
+ const co=await question('Want me to find another group to co-host?',['Match us with a group','Just us']);
+ await typing(700);
+ agent('On it. I\'ll only ping you when I need a decision.');
+ await D(400);
+ await actlog('Checking calendars',[['Synced KWEST Patagonia\'s group calendar — busy Fri/Sat'],['Checked Kellogg calendar + recruiting-week conflicts']]);
+ setPlan('night','Wed Oct 7','set','Best night');
+ const l2=await actlog('Venues',[['Found 12 venues with dead nights nearby'],['Messaged 6 venues for holds'],['Copper Owl offered a free first round for 50+',1]]);
+ await typing(700);
+ stage=1;
+ await btnCard('I have 3 picks for Wed Oct 7, your best night.','Review picks','picks');
+ const ap=await sheet('picks','picks',['Copper Owl Tavern','The Lantern Room']);
+ sum('You approved '+ap.join(' and '));
+ setPlan('venue',ap[0],'set','You approved');
+ await typing(600);
+ agent(co.startsWith('Just')?'Noted. I\'ll still show you who\'s free, just in case.':'Now finding you a group to co-host with.');
+ await actlog('Finding a group',[['Found 3 compatible groups free Wed Oct 7'],['Pinged their agents'],['3 agents said yes',1]]);
+ await typing(600);
+ stage=2;
+ await btnCard('Your matches are ready.','See matches','pack');
+ if(fast()){openPackInstant()}
+ const g=await sheet('pack','pack',groups[1]);
+ sum(`Matched with ${g.n} (${g.s})`);
+ setPlan('group',g.n,'set','You approved');setPlan('head','40 + '+g.s+' = '+(40+g.s),'set','Proposed');
+ await typing(600);
+ agent(`Talking to ${g.n.replace('Kellogg ','')}'s agent now. I'll sort out the details.`);
+ await D(500);
+ ya('Proposing Wed Oct 7, 8pm at Copper Owl Tavern for 58.');setPlan('night','Wed Oct 7, 8pm','pend','Proposed');await D(900);
+ ha('Their club meeting runs till 8:30. Counter: 9pm?');await D(900);
+ ya('9pm works. Copper Owl is open late.');setPlan('night','Wed Oct 7, 9pm','ok');await D(600);
+ setPlan('venue','Copper Owl Tavern','ok');setPlan('group',g.n,'ok');setPlan('head','40 + 18 = 58','ok');
+ sys('Night, venue and headcount agreed by both agents');await D(700);
+ ha('$400 deposit, split 50/50 at $200 per group? Priya approved.');setPlan('dep','$400 · 50/50','pend','Needs your OK');await D(700);
+ ya('Suggesting a theme: Après-Hike.');setPlan('theme','Après-Hike','set','Drafting');await D(600);
+ stage=3;
+ await btnCard('The plan is ready. I need your OK on the deposit split: 50/50, $200 each.','Review plan','plan','ok');
+ await sheet('plan','plan',1);
+ setPlan('dep',$('.prow[data-k="dep"] .v').textContent,'ok');setPlan('theme','Après-Hike','ok');
+ sum('You approved the plan');
+ stage=4;[...$('#nav').children].forEach((b,j)=>b.classList.toggle('on',j===4));
+ await typing(700);
+ add(`<div class="pimg" style="background-image:url(img/copper-owl.jpg)"><span class="stk">You're booked 🎉</span></div>
+ <div class="pb"><div class="date">WED OCT 7</div><div class="time">9PM–LATE</div><div class="who2">KWEST Patagonia × Hiking Club</div><div class="ven">Copper Owl Tavern · Evanston</div></div>
+ <div class="pd"><b>$400 deposit</b>, split 50/50, goes on the tab<br><b>Getting there:</b> Purple Line + 6 shared rides<br><b>Theme:</b> Après-Hike</div>`,'poster');
+ if(!fast())confetti();
+ await D(900);
+ $('#feedBox').style.display='none';const au=$('#autoBox');au.innerHTML=`<div id="autoDone"><div class="ah">I've got it from here</div>
+  <div class="task"><span class="cb on">${CHK}</span><span class="tt">Watching for conflicts like recruiting events and club parties. I'll reschedule if needed.</span><span class="ts live">Active</span></div>
+  <div class="task"><span class="cb on">${CHK}</span><span class="tt">Syncing headcount with the venue</span><span class="ts live">Active</span></div>
+  <div class="task"><span class="cb"></span><span class="tt">Backup venue on standby: The Lantern Room</span><span class="ts">Standby</span></div>
+  <div class="task"><span class="cb"></span><span class="tt">After the night: apply the deposit and split the rest of the tab between the two groups</span><span class="ts">Oct 8</span></div>
+  <div class="task"><span class="cb"></span><span class="tt">Suggest a rematch in November if you both rate it 5 stars</span><span class="ts">Nov</span></div></div>`;au.style.display='block';$('#upc1').innerHTML='<span class="cb on"></span><div><b>Wed Oct 7 · Copper Owl</b><small>KWEST Patagonia × Hiking Club · booked</small></div>';
+}
+function openPackInstant(){$('#pack').classList.add('open');$('#sh-pack').classList.add('revealed');$('#packTitle').textContent='Pick a group';stage_.querySelectorAll('.mcard').forEach(d=>d.classList.add('shown','flip'));place()}
+// ---------- restart / nav
+const NAVK=['chat','picks','pack','plan','booked'];const NAVFF=[-1,1,2,3,99];
+function restart(target){T++;clk=0;skipped=[];$('#feed').innerHTML='<div class="empty2">Nothing yet. Tell mixer what you want.</div>';$('#feedBox').style.display='';$('#autoBox').style.display='none';$('#autoBox').innerHTML='';$('#upc1').innerHTML='<span class="cb run"></span><div><b>Planning…</b><small>KWEST Patagonia · with mixer</small></div>';pend={};closeSheet();th.innerHTML='';buildPlan();approved=[];sortCheap=false;updDone();selectDay(7);resetPack();$('#confetti').innerHTML='';
+ stage=0;ff=NAVFF[target];[...$('#nav').children].forEach((b,j)=>b.classList.toggle('on',j===target));
+ flow().catch(e=>{if(e!=='cancel')console.error(e)}).finally(()=>{})
+ if(target>=2)setTimeout(()=>{if(openKey==='pack')openPackInstant()},50)}
+const nav=$('#nav');['Chat start','Picks','Match pack','Approve plan','Booked'].forEach((t,i)=>{const b=document.createElement('button');b.title=t;b.onclick=()=>restart(i);nav.appendChild(b)});
+document.addEventListener('keydown',e=>{if(e.target.tagName==='INPUT'||curTab==='venue')return;const cur=[...nav.children].findIndex(b=>b.classList.contains('on'));if(e.key==='ArrowRight')restart(Math.min(4,cur+1));if(e.key==='ArrowLeft')restart(Math.max(0,cur-1))});
+
+// ---------- tabs + hash
+let curTab='plan';
+function tab(t){curTab=t;$('#planView').style.display=t==='plan'?'grid':'none';$('#venueView').style.display=t==='venue'?'block':'none';$('#tabPlan').classList.toggle('on',t==='plan');$('#tabVenue').classList.toggle('on',t==='venue');
+ if(t==='venue'){closeSheet();$('#navAv').textContent='CO';$('#navAv').style.background='var(--yel)';$('#navName').textContent='Copper Owl Tavern';$('#navRole').textContent='Venue manager'}
+ else{$('#navAv').textContent='KP';$('#navAv').style.background='var(--pink)';$('#navName').textContent='KWEST Patagonia';$('#navRole').textContent='Organizer · 40 members'}}
+const H={start:0,picks:1,pack:2,plan:3,booked:4};let started=false;
+function applyHash(){const h=location.hash.slice(1);if(h==='venue'){tab('venue');if(!started){started=true;restart(0)}return}tab('plan');started=true;restart(h in H?H[h]:0)}
+window.addEventListener('hashchange',applyHash);
+// ---------- venue portal
+const dead=new Set([5,6,7,12,13,14]);const booked={7:['KWEST × Hiking · 58 · 9pm','']};const reqDay={13:1,19:1};
+function drawCal(){const g=$('#mgrid');g.innerHTML=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(d=>`<div class="dow">${d}</div>`).join('');
+ for(let i=0;i<3;i++)g.insertAdjacentHTML('beforeend','<div class="mday blank"></div>');
+ for(let d=1;d<=31;d++){const c=document.createElement('div');const isD=dead.has(d);c.className='mday'+(isD?' dead':'');
+  let h=`<span class="dn">${d}</span>`;if(booked[d])h+=`<span class="bk2 ${booked[d][1]}">${booked[d][0]}</span>`;else if(reqDay[d])h+='<span class="rq">Request pending</span>';else if(isD)h+='<span class="lab">Dead night · open to groups</span>';
+  c.innerHTML=h;c.onclick=()=>{if(booked[d])return;isD?dead.delete(d):dead.add(d);drawCal()};g.appendChild(c)}
+ $('#statDead').textContent=dead.size}
+const reqs=[{d:13,t:'Wine & Cheese Club × KWEST Japan Squad',p:57,day:'Tue Oct 13',dep:350,ask:'free first round?'},{d:19,t:'Section 3 × Marketing Club',p:44,day:'Mon Oct 19',dep:300,ask:'private back room for the first hour'}];
+function drawReqs(){const w=$('#reqs');w.innerHTML='';reqs.forEach((r,i)=>{const c=document.createElement('div');c.className='rq2';
+ c.innerHTML=`<span class="st2"></span><div class="from">From mixer agent · 2h ago</div><h4>${r.t}</h4><div class="det">${r.p} people · ${r.day} · $${r.dep} deposit</div><div class="ask">Asks: <b>${r.ask}</b></div><div class="rb"><button class="acc">Accept</button><button class="ctr">Counter</button><button class="dec">Decline</button></div><div class="ci"><input placeholder="e.g. free first round for 50+ only"><button>Send</button></div>`;
+ const st=c.querySelector('.st2');
+ c.querySelector('.acc').onclick=()=>{c.className='rq2 acc';st.textContent='ACCEPTED';booked[r.d]=[r.t.replace('Wine & Cheese Club','Wine & Cheese').replace('KWEST Japan Squad','Japan Squad')+' · '+r.p,'cob'];dead.add(r.d);delete reqDay[r.d];$('#statBooked').textContent=+$('#statBooked').textContent+1;$('#statDep').textContent='$'+(1550+r.dep).toLocaleString();drawCal()};
+ c.querySelector('.ctr').onclick=()=>{c.querySelector('.ci').style.display='flex';c.querySelector('.ci input').focus()};
+ c.querySelector('.ci button').onclick=()=>{const v=c.querySelector('.ci input').value.trim()||'free first round for 50+ only';c.className='rq2 ctr';st.textContent='COUNTERED';c.querySelector('.ask').innerHTML='You countered: <b>'+v.replace(/</g,'&lt;')+'</b>'};
+ c.querySelector('.dec').onclick=()=>{c.className='rq2 dec';st.textContent='DECLINED';delete reqDay[r.d];drawCal()};
+ w.appendChild(c)})}
+drawCal();drawReqs();
+if(location.hash)applyHash();else{started=true;restart(0)}
+</script>
+</body></html>
