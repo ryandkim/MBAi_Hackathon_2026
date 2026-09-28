@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>mixer. Your mixers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,800&display=swap" rel="stylesheet">
+<style>
+@font-face{font-family:"Bricolage Local";src:url(fonts/Bricolage.ttf) format("truetype");font-weight:200 800}
+:root{--paper:#FFF4E0;--ink:#141414;--pink:#FF3D8B;--cob:#2B4BFF;--yel:#FFD23F;--tom:#FF5A36;--grn:#1E9E5A;--mut:#6a6255;--dash:#b9ae98;
+--grain:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.08  0 0 0 0 0.06  0 0 0 0 0.02  0 0 0 .09 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+--disp:"Bricolage Grotesque","Bricolage Local","Archivo Black",Impact,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#E9DFCB var(--grain);color:var(--ink);font-family:-apple-system,"SF Pro Text",Inter,"Helvetica Neue",Arial,sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:24px;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer;border:0;color:inherit;background:none}
+a{color:inherit}
+.disp,h1,h2,h3{font-family:var(--disp);font-weight:800;letter-spacing:-.02em}
+.phone{width:390px;height:844px;border-radius:48px;background:var(--paper) var(--grain);position:relative;overflow:hidden;box-shadow:0 0 0 9px #141414,0 20px 50px rgba(0,0,0,.2)}
+.status{position:absolute;top:0;left:0;right:0;height:46px;display:flex;justify-content:space-between;align-items:center;padding:6px 30px 0;font-size:15px;font-weight:600;z-index:50}
+.notch{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:118px;height:32px;background:#000;border-radius:20px;z-index:51}
+.tag{color:var(--mut);font-size:10px;text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+/* header */
+.mhead{position:absolute;top:50px;left:0;right:0;display:flex;align-items:center;gap:10px;padding:4px 16px 10px;border-bottom:2px solid var(--ink);z-index:5;background:var(--paper) var(--grain)}
+.av{width:34px;height:34px;border-radius:50%;background:var(--pink);border:2px solid var(--ink);display:flex;align-items:center;justify-content:center;font-family:var(--disp);font-weight:800;font-size:13px;flex:none}
+.back{width:34px;height:34px;border-radius:50%;background:#fff;border:2px solid var(--ink);display:none;align-items:center;justify-content:center;flex:none}
+.back svg{width:16px;height:16px}
+.sub .back{display:flex}.sub .av{display:none}
+.mhead .nm{flex:1;line-height:1.2;min-width:0}
+.mhead .nm b{font-family:var(--disp);font-weight:800;font-size:22px;line-height:1;display:block;letter-spacing:-.02em}.mhead .nm b i{color:var(--pink);font-style:normal}
+.mhead .nm small{font-size:12px;color:var(--mut)}
+/* views */
+.view{position:absolute;top:100px;left:0;right:0;bottom:0;overflow-y:auto;padding:14px 16px 130px;scrollbar-width:none;display:none}
+.view::-webkit-scrollbar{display:none}
+.view.on{display:block;animation:pop .25s ease-out}
+@keyframes pop{from{transform:translateY(6px);opacity:0}}
+.h1row{display:flex;align-items:baseline;justify-content:space-between;margin:2px 0 10px}
+.h1row h1{font-size:34px;line-height:1;letter-spacing:-.03em}
+.h1row span{font-size:12.5px;color:var(--mut);font-weight:600}
+/* filter chips */
+.chips{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;scrollbar-width:none}
+.chips button{font-size:13px;font-weight:700;padding:6px 12px;border-radius:99px;border:2px solid var(--ink);background:#fff;flex:none}
+.chips button.on{background:var(--ink);color:#fff}
+/* attention banner */
+.nudge{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:var(--yel);border:2px solid var(--ink);box-shadow:3px 3px 0 var(--ink);border-radius:12px;padding:10px 12px;margin-bottom:16px;font-size:13.5px;font-weight:600}
+.nudge .e{font-size:20px}.nudge small{display:block;font-weight:400;color:#3b352c;font-size:12px}
+.nudge .go{margin-left:auto;font-weight:800}
+/* event card (Partiful-style) */
+.ev{display:block;width:100%;text-align:left;background:#fff;border:2.5px solid var(--ink);border-radius:16px;box-shadow:4px 4px 0 var(--ink);overflow:hidden;margin-bottom:18px}
+.ev:active{transform:translate(2px,2px);box-shadow:2px 2px 0 var(--ink)}
+.ev .img{height:168px;background:#D9D2C7 center/cover;border-bottom:2.5px solid var(--ink);position:relative}
+.ev .dt{position:absolute;left:12px;bottom:-2px;background:var(--paper);border:2.5px solid var(--ink);border-bottom:0;border-radius:10px 10px 0 0;padding:6px 10px 4px;text-align:center;line-height:.95}
+.ev .dt .mo{font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--pink)}
+.ev .dt .dn{font-family:var(--disp);font-weight:800;font-size:26px;letter-spacing:-.03em}
+.stk{position:absolute;z-index:3;font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;border:2px solid var(--ink);padding:3px 8px;border-radius:4px;box-shadow:2px 2px 0 var(--ink)}
+.stk.r{top:12px;right:12px;transform:rotate(4deg)}
+.stk.booked{background:var(--grn);color:#fff}.stk.planning{background:var(--yel)}.stk.done{background:#fff}
+.ev .body{padding:11px 14px 13px}
+.ev h2{font-size:23px;line-height:1.02;letter-spacing:-.03em}
+.ev .when{font-size:13px;font-weight:600;margin-top:4px}
+.ev .where{font-size:13px;color:var(--mut);margin-top:1px}
+.ev .foot{display:flex;align-items:center;gap:8px;margin-top:10px;padding-top:9px;border-top:1.5px dashed var(--dash);font-size:12px}
+.role{font-weight:800;text-transform:uppercase;letter-spacing:.05em;font-size:10px;border:2px solid var(--ink);border-radius:99px;padding:2px 8px}
+.role.hosting{background:var(--pink)}.role.going{background:var(--cob);color:#fff}
+.faces{display:flex;margin-left:auto}
+.faces i{width:22px;height:22px;border-radius:50%;border:2px solid var(--ink);margin-left:-7px;font-style:normal;font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;background:var(--yel)}
+.faces i:nth-child(2){background:var(--pink)}.faces i:nth-child(3){background:#fff}
+.ev .cnt{font-weight:700;color:var(--mut)}
+.none{text-align:center;color:var(--mut);font-size:14px;padding:40px 10px;line-height:1.5}
+.none b{display:block;color:var(--ink);font-family:var(--disp);font-size:22px;margin-bottom:4px}
+/* bottom tabs */
+.tabbar{position:absolute;left:50%;bottom:26px;transform:translateX(-50%);display:flex;align-items:center;gap:10px;background:#fff;border:2.5px solid var(--ink);border-radius:99px;box-shadow:4px 4px 0 var(--ink);padding:6px 10px;z-index:20}
+.tabbar button{width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;position:relative;border:2px solid transparent}
+.tabbar button.on{background:var(--yel);border-color:var(--ink)}
+.tabbar .plus{width:58px;height:58px;background:var(--pink);border:2.5px solid var(--ink);box-shadow:2px 2px 0 var(--ink);font-family:var(--disp);font-weight:800;font-size:34px;line-height:1}
+.tabbar .plus:active{transform:translate(2px,2px);box-shadow:none}
+.badge{position:absolute;top:2px;right:0;min-width:18px;height:18px;border-radius:99px;background:var(--tom);color:#fff;border:2px solid var(--ink);font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;padding:0 4px}
+/* calendar */
+.mnav{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.mnav h1{font-size:28px;flex:1;letter-spacing:-.03em}
+.mnav button{width:34px;height:34px;border-radius:50%;background:#fff;border:2px solid var(--ink);box-shadow:2px 2px 0 var(--ink);font-weight:800;font-size:16px}
+.mcal{background:#fff;border:2.5px solid var(--ink);border-radius:14px;box-shadow:4px 4px 0 var(--ink);padding:10px 8px 10px}
+.mgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.dow{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--mut);text-align:center;padding-bottom:2px}
+.md{height:50px;border:1.5px solid #e2d8c4;border-radius:8px;padding:3px 3px;display:flex;flex-direction:column;align-items:center;gap:2px;background:#fff;font-size:10px;position:relative}
+.md.blank{border:0;background:none}
+.md .n{font-family:var(--disp);font-weight:800;font-size:14px;line-height:1}
+.md.today .n{background:var(--ink);color:#fff;border-radius:99px;padding:1px 5px}
+.md.bo{background:repeating-linear-gradient(45deg,#fff 0 4px,#efe6d4 4px 8px);border:1.5px dashed #9b917f}
+.md.bo .n{color:#9b917f;text-decoration:line-through}
+.md.past .n{opacity:.4}
+.md.sel{border:2.5px solid var(--ink);box-shadow:2px 2px 0 var(--ink)}
+.dots{display:flex;gap:2px}
+.dots i{width:7px;height:7px;border-radius:50%;border:1.5px solid var(--ink)}
+.c-pink{background:var(--pink)}.c-cob{background:var(--cob)}.c-yel{background:var(--yel)}.c-inv{background:#fff;border-style:dashed!important}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin:10px 2px 0;font-size:11.5px;color:var(--mut)}
+.legend i{display:inline-block;width:10px;height:10px;border:1.5px solid var(--ink);border-radius:50%;margin-right:4px;vertical-align:-1px}
+.legend i.sq{border-radius:2px;background:repeating-linear-gradient(45deg,#fff 0 2px,#d8cdb7 2px 4px);border-style:dashed}
+.dayp{margin-top:16px}
+.dayp h3{font-size:18px;margin-bottom:8px}
+.ditem{display:flex;gap:10px;align-items:center;background:#fff;border:2px solid var(--ink);border-radius:12px;padding:9px 11px;margin-bottom:8px;font-size:13px;width:100%;text-align:left}
+.ditem .sw{width:12px;height:36px;border-radius:4px;border:2px solid var(--ink);flex:none}
+.ditem b{display:block;font-size:14px}.ditem small{color:var(--mut)}
+.ditem.bo{background:repeating-linear-gradient(45deg,#fff 0 6px,#f3ecdf 6px 12px);border-style:dashed}
+.btns{display:flex;gap:8px;margin-top:6px}
+.cta{flex:1;padding:12px;border-radius:12px;font-family:var(--disp);font-weight:800;font-size:15px;background:var(--yel);border:2px solid var(--ink);box-shadow:3px 3px 0 var(--ink);text-align:center;text-decoration:none}
+.ghost{flex:1;padding:12px;border-radius:12px;font-weight:700;font-size:14px;background:#fff;border:2px solid var(--ink);box-shadow:3px 3px 0 var(--ink)}
+.cta:active,.ghost:active{transform:translate(3px,3px);box-shadow:none}
+/* invites */
+.inv{background:#fff;border:2.5px solid var(--ink);border-radius:16px;box-shadow:4px 4px 0 var(--ink);overflow:hidden;margin-bottom:18px;animation:pop .25s}
+.inv.out{transition:.3s;opacity:0;transform:translateX(60px)}
+.inv .from{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:2px dashed var(--ink)}
+.inv .mono{width:38px;height:38px;border-radius:10px;border:2px solid var(--ink);display:flex;align-items:center;justify-content:center;font-family:var(--disp);font-weight:800;font-size:14px;flex:none}
+.inv .from b{font-size:13.5px;display:block}.inv .from small{font-size:11.5px;color:var(--mut)}
+.inv .pct{margin-left:auto;font-size:10.5px;font-weight:800;text-transform:uppercase;border:2px solid var(--grn);color:var(--grn);border-radius:4px;padding:2px 6px;transform:rotate(4deg);flex:none}
+.inv .img{height:110px;background:center/cover;border-bottom:2.5px solid var(--ink)}
+.inv .body{padding:10px 14px 14px}
+.inv h2{font-size:23px;line-height:1;letter-spacing:-.03em}
+.inv .when{font-size:13px;font-weight:600;margin-top:4px}.inv .where{font-size:13px;color:var(--mut)}
+.facts{display:flex;border-top:2px solid var(--ink);border-bottom:2px solid var(--ink);margin:10px 0;padding:6px 0}
+.facts div{flex:1;font-size:11px;color:var(--mut)}.facts b{display:block;font-family:var(--disp);font-weight:800;font-size:17px;color:var(--ink)}
+.inv .note{font-size:13px;font-style:italic;color:#3b352c;line-height:1.4}
+.warn{margin-top:8px;font-size:12.5px;font-weight:700;background:#FFE3DC;border:2px solid var(--tom);border-radius:8px;padding:6px 9px}
+.okk{margin-top:8px;font-size:12.5px;font-weight:600;color:var(--grn)}
+.inv .btns{margin-top:12px}
+.inv .acc{background:var(--pink)}
+.mailbox{display:flex;flex-direction:column;align-items:center;text-align:center;padding:40px 12px 0}
+.mailbox svg{width:190px;height:170px}
+.mailbox h2{font-size:28px;margin-top:10px;letter-spacing:-.03em}
+.mailbox p{font-size:14px;color:var(--mut);margin:6px 0 18px;line-height:1.45;max-width:280px}
+/* event sheet */
+.scrim{position:absolute;inset:0;background:rgba(20,20,20,.35);z-index:30;opacity:0;pointer-events:none;transition:.25s}
+.scrim.open{opacity:1;pointer-events:auto}
+.sheet{position:absolute;left:0;right:0;bottom:0;z-index:31;background:var(--paper) var(--grain);border-top:2.5px solid var(--ink);border-radius:22px 22px 0 0;padding:10px 18px 30px;transform:translateY(105%);transition:transform .4s cubic-bezier(.2,.8,.2,1);max-height:78%;overflow:auto}
+.sheet.open{transform:none}
+.grab{width:36px;height:5px;border-radius:9px;background:var(--ink);opacity:.25;margin:0 auto 12px}
+.sheet h2{font-size:28px;line-height:1;letter-spacing:-.03em}
+.kv{display:flex;justify-content:space-between;gap:10px;font-size:13.5px;padding:8px 0;border-top:1.5px dashed var(--dash)}
+.kv span:first-child{color:var(--mut)}.kv span:last-child{font-weight:600;text-align:right}
+.toast{position:absolute;left:18px;right:18px;bottom:110px;z-index:60;background:var(--ink);color:#fff;border-radius:10px;box-shadow:3px 3px 0 var(--pink);padding:10px 13px;font-size:13px;opacity:0;transform:translateY(8px);transition:.25s;pointer-events:none}
+.toast.show{opacity:1;transform:none}
+.demo{display:flex;gap:14px;font-size:12px;color:var(--mut)}
+.demo button{font-size:12px;color:var(--mut);text-decoration:underline}
+@media (max-width:440px){body{padding:0;gap:0}.phone{width:100vw;height:100vh;height:100dvh;border-radius:0;box-shadow:none}.notch,.status{display:none}.mhead{top:0;padding-top:10px}.view{top:56px}.demo{display:none}}
+</style></head>
+<body>
+<div class="phone" id="phone">
+  <div class="notch"></div>
+  <div class="status"><span>9:41</span><span style="display:flex;gap:6px;align-items:center"><svg width="18" height="12" viewBox="0 0 18 12" fill="#111"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg><svg width="26" height="12" viewBox="0 0 26 12"><rect x=".5" y=".5" width="22" height="11" rx="3" fill="none" stroke="#111" opacity=".4"/><rect x="2" y="2" width="16" height="8" rx="2" fill="#111"/><rect x="24" y="4" width="2" height="4" rx="1" fill="#111" opacity=".4"/></svg></span></div>
+
+  <div class="mhead" id="mhead">
+    <div class="av" id="myAv"></div>
+    <button class="back" onclick="go('home')" aria-label="Back to home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <div class="nm"><b>mixer<i>.</i></b><small id="myKwest"></small></div>
+    <span class="tag">Sample data</span>
+  </div>
+
+  <section class="view" id="v-home">
+    <div class="h1row"><h1>Your mixers</h1><span id="evCount"></span></div>
+    <div class="chips" id="chips"></div>
+    <div id="nudge"></div>
+    <div id="evList"></div>
+  </section>
+
+  <section class="view" id="v-calendar">
+    <div class="mnav"><h1 id="mTitle"></h1><button onclick="shiftMonth(-1)" aria-label="Previous month">‹</button><button onclick="shiftMonth(1)" aria-label="Next month">›</button></div>
+    <div class="mcal"><div class="mgrid" id="mgrid"></div></div>
+    <div class="legend"><span><i class="c-pink"></i>Hosting</span><span><i class="c-cob"></i>Planning</span><span><i class="c-yel"></i>Going</span><span><i class="c-inv"></i>Invite</span><span><i class="sq"></i>Blackout</span></div>
+    <div class="dayp" id="dayp"></div>
+  </section>
+
+  <section class="view" id="v-invites">
+    <div class="h1row"><h1>Invites</h1><span id="invCount"></span></div>
+    <div id="invList"></div>
+  </section>
+
+  <nav class="tabbar" aria-label="Main">
+    <button id="t-calendar" onclick="go('calendar')" aria-label="Calendar" title="Calendar">📅</button>
+    <button class="plus" onclick="location.href='create.html'" aria-label="Create event" title="Create event">+</button>
+    <button id="t-invites" onclick="go('invites')" aria-label="Invites" title="Invites">✉️<span class="badge" id="badge"></span></button>
+  </nav>
+
+  <div class="scrim" id="scrim" onclick="closeSheet()"></div>
+  <div class="sheet" id="sheet"></div>
+  <div class="toast" id="toast"></div>
+</div>
+<div class="demo"><button onclick="Mixr.reset();render()">Reset sample data</button><button onclick="Mixr.clearInvites();render();go('invites')">Show empty mailbox</button><a href="web.html">Desktop organizer view</a></div>
+
+<script src="js/store.js"></script>
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const MO=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const MOL=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const WD=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const {TODAY,ME,pd,iso}=Mixr;
+const fmt=s=>{const d=pd(s);return WD[d.getDay()]+' '+MO[d.getMonth()]+' '+d.getDate()};
+const ini=n=>n.split(/\s+/).filter(w=>/^[A-Z&]/.test(w)&&w!=='&').map(w=>w[0]).join('').slice(0,2);
+const evColor=e=>e.status==='planning'?'cob':e.role==='going'?'yel':'pink';
+
+$('#myAv').textContent=ME.ini;$('#myKwest').textContent=ME.kwest+' · '+ME.members+' members';
+
+// ---------- routing
+let cur='home';
+function go(v){cur=v;location.hash=v==='home'?'':v;
+ document.querySelectorAll('.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));
+ $('#mhead').classList.toggle('sub',v!=='home');
+ $('#t-calendar').classList.toggle('on',v==='calendar');$('#t-invites').classList.toggle('on',v==='invites');
+ closeSheet()}
+window.addEventListener('hashchange',()=>{const h=location.hash.slice(1)||'home';if(h!==cur&&['home','calendar','invites'].includes(h))go(h)});
+
+// ---------- home
+let filt='upcoming';
+const FILTERS=[['upcoming','Upcoming'],['hosting','Hosting'],['going','Going'],['past','Past']];
+function renderHome(){
+ const all=Mixr.events(),t=iso(TODAY);
+ const up=all.filter(e=>e.date>=t),past=all.filter(e=>e.date<t).reverse();
+ const list={upcoming:up,hosting:up.filter(e=>e.role==='hosting'),going:up.filter(e=>e.role==='going'),past}[filt];
+ $('#chips').innerHTML=FILTERS.map(([k,l])=>`<button class="${k===filt?'on':''}" onclick="filt='${k}';renderHome()">${l}</button>`).join('');
+ $('#evCount').textContent=up.length+' upcoming';
+ const n=Mixr.invites().length;
+ $('#nudge').innerHTML=n&&filt==='upcoming'?`<button class="nudge" onclick="go('invites')"><span class="e">✉️</span><span>${n} new invite${n>1?'s':''}<small>Other KWEST chairs want to co-host with you</small></span><span class="go">›</span></button>`:'';
+ $('#evList').innerHTML=list.length?list.map(evCard).join(''):
+  `<div class="none"><b>Nothing here yet</b>${filt==='past'?'Your past mixers will show up here.':'Tap + to plan a mixer, or accept an invite.'}</div>`;
+}
+function evCard(e){const d=pd(e.date);const st={booked:'Booked',planning:'Planning',done:'Wrapped'}[e.status];
+ const faces=[e.host,e.with].filter(Boolean).map(n=>`<i>${esc(ini(n))}</i>`).join('');
+ return `<button class="ev" onclick="openEvent('${e.id}')"><div class="img" style="background-image:url(${e.img})"><span class="stk r ${e.status}">${st}</span><div class="dt"><div class="mo">${MO[d.getMonth()]}</div><div class="dn">${d.getDate()}</div></div></div>
+ <div class="body"><h2>${esc(e.title)}</h2><div class="when">${fmt(e.date)} · ${esc(e.time)}</div><div class="where">${esc(e.venue)} · ${esc(e.hood)}</div>
+ <div class="foot"><span class="role ${e.role}">${e.role==='hosting'?'Hosting':'Going'}</span><span>${e.role==='hosting'?(e.with?'with '+esc(e.with):'Just you'):'by '+esc(e.host)}</span><span class="faces">${faces}</span><span class="cnt">${e.head}</span></div></div></button>`}
+
+// ---------- event sheet
+function openEvent(id){const e=Mixr.events().find(x=>x.id===id);if(!e)return;const b=Mixr.blackoutOn(e.date);
+ $('#sheet').innerHTML=`<div class="grab"></div><div class="tag" style="margin-bottom:4px">${e.role==='hosting'?'You\'re hosting':'You\'re going'}</div><h2>${esc(e.title)}</h2>
+ <div style="margin:12px 0 4px">
+ <div class="kv"><span>When</span><span>${fmt(e.date)}, ${esc(e.time)}</span></div>
+ <div class="kv"><span>Venue</span><span>${esc(e.venue)} · ${esc(e.hood)}</span></div>
+ <div class="kv"><span>Groups</span><span>${esc(e.host)}${e.with&&e.with!==e.host?' × '+esc(e.with):''}</span></div>
+ <div class="kv"><span>Headcount</span><span>${e.head}</span></div>
+ <div class="kv"><span>Budget</span><span>$${e.budgetPP}/person${e.dep?' · $'+e.dep+' deposit':''}</span></div>
+ <div class="kv"><span>Status</span><span>${{booked:'Booked',planning:'Planning, venue on hold',done:'Wrapped'}[e.status]}</span></div></div>
+ ${b?`<div class="warn">Falls in your blackout: ${esc(b.label)}</div>`:''}
+ <div class="btns" style="margin-top:16px">${e.status==='planning'?'<a class="cta" href="create.html">Keep planning</a>':''}<button class="ghost" onclick="closeSheet();go('calendar');pickDay('${e.date}')">See on calendar</button></div>`;
+ $('#toast').classList.remove('show');$('#sheet').classList.add('open');$('#scrim').classList.add('open')}
+function closeSheet(){$('#sheet').classList.remove('open');$('#scrim').classList.remove('open')}
+
+// ---------- calendar
+// Open on the month of the next upcoming mixer (or this month).
+const nextEv=Mixr.events().find(e=>e.date>=iso(TODAY));let view=nextEv?pd(nextEv.date):new Date(TODAY);view.setDate(1);let sel=null;
+function shiftMonth(k){view=new Date(view.getFullYear(),view.getMonth()+k,1);sel=null;renderCal()}
+function pickDay(s){const d=pd(s);view=new Date(d.getFullYear(),d.getMonth(),1);sel=s;renderCal()}
+function renderCal(){
+ $('#mTitle').textContent=MOL[view.getMonth()]+' '+view.getFullYear();
+ const evs=Mixr.events(),invs=Mixr.invites(),t=iso(TODAY);
+ const first=view.getDay(),days=new Date(view.getFullYear(),view.getMonth()+1,0).getDate();
+ let h=WD.map(w=>`<div class="dow">${w[0]}</div>`).join('');
+ for(let i=0;i<first;i++)h+='<div class="md blank"></div>';
+ for(let d=1;d<=days;d++){const s=iso(new Date(view.getFullYear(),view.getMonth(),d));
+  const es=evs.filter(e=>e.date===s),is=invs.filter(i=>i.date===s),bo=Mixr.blackoutOn(s);
+  const cls=['md',bo?'bo':'',s===t?'today':'',s<t?'past':'',s===sel?'sel':''].join(' ');
+  h+=`<button class="${cls}" onclick="sel='${s}';renderCal()"><span class="n">${d}</span><span class="dots">${es.map(e=>`<i class="c-${evColor(e)}"></i>`).join('')}${is.map(()=>'<i class="c-inv"></i>').join('')}</span></button>`}
+ $('#mgrid').innerHTML=h;renderDay()}
+function renderDay(){const p=$('#dayp');
+ if(!sel){ // month summary
+  const m=iso(view).slice(0,7);const es=Mixr.events().filter(e=>e.date.startsWith(m));const bs=Mixr.blackouts().filter(b=>b.start.startsWith(m)||b.end.startsWith(m));
+  p.innerHTML=`<h3>This month</h3>`+(es.length||bs.length?es.map(dayEv).join('')+bs.map(b=>`<div class="ditem bo"><span class="sw" style="background:#fff;border-style:dashed"></span><div><b>${esc(b.label)}</b><small>Blackout · ${fmt(b.start)}${b.end!==b.start?' – '+fmt(b.end):''}</small></div></div>`).join('')
+   :'<div class="none" style="padding:16px">No mixers or blackouts yet. Tap a day to plan or block it.</div>');return}
+ const es=Mixr.events().filter(e=>e.date===sel),is=Mixr.invites().filter(i=>i.date===sel),bo=Mixr.blackoutOn(sel);
+ p.innerHTML=`<h3>${fmt(sel)}</h3>`+es.map(dayEv).join('')+
+  is.map(i=>`<button class="ditem" onclick="go('invites')"><span class="sw c-inv"></span><div><b>${esc(i.title)}</b><small>Invite from ${esc(i.from)} · ${esc(i.time)}</small></div></button>`).join('')+
+  (bo?`<div class="ditem bo"><span class="sw" style="background:#fff;border-style:dashed"></span><div><b>${esc(bo.label)}</b><small>Blackout. mixer won't plan or accept anything this day.</small></div></div>`:'')+
+  (!es.length&&!is.length&&!bo?'<div class="none" style="padding:10px 0 14px">Nothing planned. This night is open.</div>':'')+
+  `<div class="btns">${bo?'':`<a class="cta" href="create.html">Plan a mixer</a>`}<button class="ghost" onclick="Mixr.toggleBlackout(sel);renderCal();toast('${bo?'Blackout removed.':'Marked as a blackout. mixer will skip this date.'}')">${bo?'Remove blackout':'Mark blackout'}</button></div>`}
+function dayEv(e){return `<button class="ditem" onclick="openEvent('${e.id}')"><span class="sw c-${evColor(e)}"></span><div><b>${esc(e.title)}</b><small>${fmt(e.date)} · ${esc(e.time)} · ${esc(e.venue)}</small></div></button>`}
+
+// ---------- invites
+function renderInvites(){const inv=Mixr.invites();
+ $('#invCount').textContent=inv.length?inv.length+' waiting':'';
+ const b=$('#badge');b.textContent=inv.length;b.style.display=inv.length?'flex':'none';
+ if(!inv.length){$('#invList').innerHTML=`<div class="mailbox">${MAILBOX}<h2>Empty mailbox</h2><p>When another KWEST social chair invites your group to a mixer, it lands here.</p><a class="cta" style="flex:none;padding:12px 26px" href="create.html">Plan your own mixer</a></div>`;return}
+ const evs=Mixr.events();
+ $('#invList').innerHTML=inv.map(i=>{const bo=Mixr.blackoutOn(i.date),clash=evs.find(e=>e.date===i.date);
+  return `<div class="inv" id="inv-${i.id}"><div class="from"><span class="mono" style="background:${i.gc};color:${i.gt}">${esc(i.ini)}</span><div><b>${esc(i.chair)} · ${esc(i.from)}</b><small>Invited ${esc(ME.kwest)} · ${esc(i.sent)}</small></div><span class="pct">${i.match}% match</span></div>
+  <div class="img" style="background-image:url(${i.img})"></div>
+  <div class="body"><h2>${esc(i.title)}</h2><div class="when">${fmt(i.date)} · ${esc(i.time)}</div><div class="where">${esc(i.venue)} · ${esc(i.hood)}</div>
+  <div class="facts"><div><b>${i.head}</b>their group</div><div><b>${i.head+ME.members}</b>total</div><div><b>$${i.budgetPP}</b>per person</div></div>
+  <div class="note">“${esc(i.note)}”</div>
+  ${bo?`<div class="warn">Conflicts with your blackout: ${esc(bo.label)}</div>`:clash?`<div class="warn">You already have ${esc(clash.title)} that night</div>`:`<div class="okk">✓ You're free that night${i.budgetPP<=ME.budgetPP?' and it fits your $'+ME.budgetPP+'/person budget':''}</div>`}
+  <div class="btns"><button class="ghost" onclick="answer('${i.id}',false)">Decline</button><button class="cta acc" onclick="answer('${i.id}',true)">Accept</button></div></div></div>`}).join('')}
+function answer(id,ok){const inv=Mixr.invites().find(i=>i.id===id);const el=$('#inv-'+id);el.classList.add('out');
+ setTimeout(()=>{Mixr.respondInvite(id,ok);render();toast(ok?`You're going to ${esc(inv.title)}. It's on your calendar.`:`Declined. mixer will let ${esc(inv.chair)} know.`)},300)}
+const MAILBOX=`<svg viewBox="0 0 200 180" fill="none" stroke="#141414" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"><rect x="96" y="100" width="12" height="72" fill="#fff"/><path d="M40 60a30 30 0 0 1 60 0v50H40z" fill="#FFD23F"/><path d="M70 30h70a30 30 0 0 1 30 30v50H100V60a30 30 0 0 0-30-30z" fill="#FF3D8B"/><path d="M52 108h36" stroke-dasharray="2 8"/><path d="M150 50v-30h22v14h-22" fill="#2B4BFF"/><path d="M60 172h84"/></svg>`;
+
+// ---------- misc
+let tt;function toast(t){const e=$('#toast');e.innerHTML=t;e.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('show'),2800)}
+function render(){renderHome();renderCal();renderInvites()}
+render();go(['calendar','invites'].includes(location.hash.slice(1))?location.hash.slice(1):'home');
+</script>
+</body></html>
